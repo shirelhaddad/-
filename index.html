@@ -254,12 +254,12 @@ label.lb{display:block;font-size:var(--t13);color:var(--mute);margin:var(--s16) 
 
 <script>
 {
-const VER='0.5.2';
+const VER='0.5.3';
 const KEY='yerakot-data';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ico=id=>`<svg aria-hidden="true"><use href="#${id}"/></svg>`;
-const pk=(p,q)=>p==='א'?(q===1?'ארגז':q?'ארגזים':'ארגז'):(q===1?'יחידה':q?'יחידות':'יחידה');
+const pk=(p,q)=>p==='א'?(q===1?'ארגז':q?'ארגזים':'ארגז'):p==='ח'?(q===1?'חבילה':q?'חבילות':'חבילה'):(q===1?'יחידה':q?'יחידות':'יחידה');
 const fmtD=d=>new Date(d).toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'});
 const fmtT=d=>new Date(d).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -406,7 +406,7 @@ const dayKey=()=>{const d=new Date(Date.now()-4*36e5);return d.getFullYear()+'-'
 const newExt=()=>({day:dayKey(),items:{},src:{},near:{},bad:[],msgs:[],none:false,snooze:0});
 
 /* ---------- products added for supplier ילת (0.5.2); also merged once into saved data ---------- */
-const ADDP=[["ירקות","תפו\"א לבן למיקרו",[[0,"י"]],false,"","potato|#e6d3a3"],["ירקות","תפו\"א אדום למיקרו",[[0,"י"]],false,"","potato|#b8574a"],["ירקות","גזר צבעוני",[[0,"א"]],false,"","carrot"],["ירק ועשבי תיבול","פטרוזיליה מהדרין",[[0,"י"]],false,"","curly|#3f9a4a"],["ירק ועשבי תיבול","כוסברה מהדרין",[[0,"י"]],false,"","curly|#6cc07f"],["ירק ועשבי תיבול","שמיר מהדרין",[[0,"י"]],false,"","dill"],["ירק ועשבי תיבול","נענע מהדרין",[[0,"י"]],false,"","herb|#3fb36a|big"],["ירקות","כרוב לבן מהדרין",[[0,"י"]],false,"","cabbage|#dfe9c8"],["ירקות","כרוב סגול מהדרין",[[0,"י"]],false,"","cabbage|#8e3b7e"],["ירק ועשבי תיבול","סלרי מהדרין",[[0,"י"]],false,"","celery|head"],["ירק ועשבי תיבול","בצל ירוק מהדרין",[[0,"י"]],false,"","greenonion"],["ירקות","כרובית מהדרין",[[0,"י"]],false,"","cauli"]];
+const ADDP=[["ירקות","תפו\"א לבן למיקרו",[[0,"י"]],false,"","potato|#e6d3a3"],["ירקות","תפו\"א אדום למיקרו",[[0,"י"]],false,"","potato|#b8574a"],["ירקות","גזר צבעוני",[[0,"ח"]],false,"","carrot"],["ירק ועשבי תיבול","פטרוזיליה מהדרין",[[0,"י"]],false,"","curly|#3f9a4a"],["ירק ועשבי תיבול","כוסברה מהדרין",[[0,"י"]],false,"","curly|#6cc07f"],["ירק ועשבי תיבול","שמיר מהדרין",[[0,"י"]],false,"","dill"],["ירק ועשבי תיבול","נענע מהדרין",[[0,"י"]],false,"","herb|#3fb36a|big"],["ירקות","כרוב לבן מהדרין",[[0,"י"]],false,"","cabbage|#dfe9c8"],["ירקות","כרוב סגול מהדרין",[[0,"י"]],false,"","cabbage|#8e3b7e"],["ירק ועשבי תיבול","סלרי מהדרין",[[0,"י"]],false,"","celery|head"],["ירק ועשבי תיבול","בצל ירוק מהדרין",[[0,"י"]],false,"","greenonion"],["ירקות","כרובית מהדרין",[[0,"י"]],false,"","cauli"]];
 SEEDP.push(...ADDP);
 function seed(){const sup=SEED_SUP.map(([n,a],i)=>({id:'s'+i,n,a}));const cats=[];
  const prods=SEEDP.map(([c,n,ss,hide,note,art],i)=>{if(!cats.includes(c))cats.push(c);return{id:'p'+i,n,c,s:ss.map(([k,p])=>({k:'s'+k,p})),hide,note,art}});
@@ -419,6 +419,7 @@ if(st.ver===5){st.added=st.added||[];const yk=((st.sup.find(s=>s.n==='ילת')||
  ADDP.forEach(([c,n,ss,hide,note,art])=>{if(st.added.includes(n))return;st.added.push(n);ch=true;if(st.prods.some(p=>p.n===n))return;
   if(!st.cats.includes(c))st.cats.push(c);const np={id:uid('p'),n,c,s:ss.map(([k,pk])=>({k:k===0?yk:'s'+k,p:pk})),hide,note,art};
   let at=-1;st.prods.forEach((p,i)=>{if(p.c===c)at=i});st.prods.splice(at<0?st.prods.length:at+1,0,np)});
+ if(!st.added.includes('#pack-ch1')){st.added.push('#pack-ch1');ch=true;const g=st.prods.find(p=>p.n==='גזר צבעוני');if(g)g.s.forEach(x=>{if(x.k===yk&&x.p==='א')x.p='ח'})}
  if(ch)try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
 let PM={};const reindex=()=>{PM={};st.prods.forEach(p=>PM[p.id]=p);VAR=null};
 let VAR=null;
@@ -483,8 +484,8 @@ function matchLine(clean){const R=rank(clean),F=R.filter(r=>r.full).sort((a,b)=>
 function parse(text){const res=[],bad=[];
  text.split(/\n+/).map(l=>l.trim()).filter(Boolean).forEach(line=>{
   const nm=line.match(/\d+(?:[.,]\d+)?/);const q=nm?parseFloat(nm[0].replace(',','.')):1;
-  let p=null;if(/ארגז|ארג'|קרטון/.test(line))p='א';else if(/יחיד|יח'|(^|\s)יח(\s|$)/.test(line))p='י';
-  let clean=line.replace(/\d+(?:[.,]\d+)?/g,' ').replace(/ארגזים|ארגז|ארג'|קרטונים|קרטון|יחידות|יחידה|יח'/g,' ').replace(/(^|\s)יח(?=\s|$)/g,' ').replace(/[–:*•×,]/g,' ').replace(/(^|\s)[-x](?=\s|$)/g,' ').replace(/\s+/g,' ').trim();
+  let p=null;if(/ארגז|ארג'|קרטון/.test(line))p='א';else if(/חביל/.test(line))p='ח';else if(/יחיד|יח'|(^|\s)יח(\s|$)/.test(line))p='י';
+  let clean=line.replace(/\d+(?:[.,]\d+)?/g,' ').replace(/ארגזים|ארגז|ארג'|קרטונים|קרטון|חבילות|חבילה|יחידות|יחידה|יח'/g,' ').replace(/(^|\s)יח(?=\s|$)/g,' ').replace(/[–:*•×,]/g,' ').replace(/(^|\s)[-x](?=\s|$)/g,' ').replace(/\s+/g,' ').trim();
   SYN.forEach(([r,t])=>clean=clean.replace(r,t));
   const a=st.alias[clean];
   if(a&&PM[a]){res.push({id:a,q,p:p||packOf(PM[a]),op:p,line,clean});return}
@@ -717,7 +718,7 @@ function editProd(id){const p=id?PM[id]:null;const d=p?JSON.parse(JSON.stringify
   <label class="lb" for="pc">קטגוריה</label><select class="field" id="pc">${st.cats.map(c=>`<option${c===d.c&&!newCat?' selected':''}>${esc(c)}</option>`).join('')}<option value="__new"${newCat?' selected':''}>+ קטגוריה חדשה…</option></select>
   ${newCat?`<input class="field" id="ncat" style="margin-top:8px" placeholder="שם הקטגוריה החדשה" value="${esc(nc)}">`:''}
   <label class="lb">ספקים ואריזה</label>
-  ${d.s.map((x,i)=>`<div class="srow"><select class="field" data-si="${i}" aria-label="ספק">${st.sup.map(s=>`<option value="${s.id}"${s.id===x.k?' selected':''}>${esc(s.n)}</option>`).join('')}</select><div class="seg pack"><button type="button" data-a="pk:${i},א" class="${x.p==='א'?'on':''}">ארגז</button><button type="button" data-a="pk:${i},י" class="u ${x.p==='י'?'on':''}">יחידה</button></div>${d.s.length>0?`<button class="x" data-a="rmS:${i}" type="button" aria-label="הסרת ספק">×</button>`:''}</div>`).join('')}
+  ${d.s.map((x,i)=>`<div class="srow"><select class="field" data-si="${i}" aria-label="ספק">${st.sup.map(s=>`<option value="${s.id}"${s.id===x.k?' selected':''}>${esc(s.n)}</option>`).join('')}</select><div class="seg pack"><button type="button" data-a="pk:${i},א" class="${x.p==='א'?'on':''}">ארגז</button><button type="button" data-a="pk:${i},י" class="u ${x.p==='י'?'on':''}">יחידה</button><button type="button" data-a="pk:${i},ח" class="u ${x.p==='ח'?'on':''}">חבילה</button></div>${d.s.length>0?`<button class="x" data-a="rmS:${i}" type="button" aria-label="הסרת ספק">×</button>`:''}</div>`).join('')}
   ${d.s.length<st.sup.length?`<button class="mini" data-a="addS" type="button">${d.s.length?'+ ספק נוסף':'+ בחירת ספק'}</button>`:''}
   <label class="sw"><span>מוסתר מההזמנה (לא בעונה)</span><input type="checkbox" id="ph"${d.hide?' checked':''}></label>
   <div style="margin-top:16px"><button class="btn" data-a="save" type="button">שמירה</button>${p?'<button class="btn danger" data-a="del" type="button">מחיקת המוצר</button>':''}</div>`;
