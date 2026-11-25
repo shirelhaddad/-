@@ -1,0 +1,758 @@
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>הזמנת ירקות</title>
+<script>document.documentElement.lang="he";document.documentElement.dir="rtl"</script>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: quiet, premium, calm; a tool used every evening
+   IDEA: a well-set price list on white paper: big light type, hairlines, soft colour dots
+   PICTURE: the catalog itself, each product in a pale colour circle
+   COLOUR and TYPE: white / deep night, ink pills, green = unit, orange = carton, violet = external supplier; Heebo 300/500/800
+   LAYOUT: title scrolls away, one sticky underline search row, list, flat order bar above the tab bar */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#111613);--card:light-dark(#ffffff,#171e1a);--soft:light-dark(#f5f6f4,#1d2621);--ink:light-dark(#1d2b22,#ecf1ed);--mute:light-dark(#7d877f,#9aa79e);--line:light-dark(#eceeec,#28322c);
+--pri:light-dark(#1d2b22,#ecf1ed);--on-pri:light-dark(#ffffff,#111613);
+--acc:light-dark(#2f8a52,#5cc488);--on-acc:light-dark(#ffffff,#0b140f);
+--box:light-dark(#b0631c,#e9a25e);--on-box:light-dark(#ffffff,#1a1006);--box-s:light-dark(#fbf1e6,#33281c);
+--ext:light-dark(#6150c9,#a99cf5);--on-ext:light-dark(#ffffff,#140f33);--ext-s:light-dark(#f2f0fd,#242043);
+--danger:light-dark(#c62f2f,#ff8a8a);--on-danger:light-dark(#ffffff,#2a0606);
+--wa:light-dark(#178a45,#3ccf7a);--on-wa:light-dark(#ffffff,#05200f);
+--t13:13px;--t14:14px;--t16:16px;--t18:18px;--t22:22px;--t28:28px;--t32:32px;
+--b40:40px;--b48:48px;--b56:56px;--r12:12px;--r16:16px;--r24:24px;--s4:4px;--s8:8px;--s12:12px;--s16:16px;--s24:24px;
+--top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:var(--t16)/1.5 Heebo,system-ui,sans-serif;overflow-x:clip}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+[hidden]{display:none!important}
+input,select,textarea{font-size:var(--t16)}
+.field{width:100%;min-height:var(--b48);border:0;border-bottom:1.5px solid var(--line);background:transparent;border-radius:0;padding:0 2px}
+.field:focus{border-bottom-color:var(--ink);outline:none}
+textarea.field{padding:var(--s12);min-height:112px;resize:vertical;border:1.5px solid var(--line);border-radius:var(--r16)}
+textarea.field:focus{border-color:var(--ink)}
+select.field{appearance:none;-webkit-appearance:none;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237d877f' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat left 4px center;padding-inline-end:2px;padding-inline-start:20px}
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s8);width:100%;min-height:var(--b56);border-radius:999px;border:0;background:var(--pri);color:var(--on-pri);font-weight:500;font-size:var(--t18);text-decoration:none}
+.btn.ext{background:var(--ext);color:var(--on-ext)}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line);font-size:var(--t16);min-height:var(--b48)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 50%,transparent);font-size:var(--t16);min-height:var(--b48)}
+.btn.danger.arm{background:var(--danger);color:var(--on-danger)}
+.btn+.btn{margin-top:var(--s8)}
+.mini{min-height:var(--b40);min-width:44px;border-radius:999px;border:1px solid var(--line);background:transparent;padding:0 var(--s12);font-size:var(--t14)}
+.mini.ext{border-color:color-mix(in srgb,var(--ext) 50%,transparent);color:var(--ext)}
+.mini.fill{background:var(--ext);border-color:var(--ext);color:var(--on-ext)}
+.pill{flex:none;min-height:var(--b40);border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:0 var(--s12);font-size:var(--t14);white-space:nowrap}
+
+.ttl{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s8);padding:calc(var(--top) + var(--s24)) max(5vw,20px) var(--s4)}
+.ttl>div{flex:1 0 auto}
+.ttl small{display:block;font-size:var(--t13);color:var(--mute);white-space:nowrap}
+.ttl h1{font-size:var(--t32);line-height:1.1;margin:2px 0 0;font-weight:300;white-space:nowrap}
+.ttl h1 strong{font-weight:800}
+.head{position:sticky;top:0;z-index:4;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:var(--s4) max(5vw,20px) var(--s8);display:flex;gap:var(--s16)}
+.head .field{flex:1;border-bottom-color:var(--ink)}
+.head select.field{flex:0 0 34%;border-bottom-color:var(--line)}
+main{max-width:720px;margin:0 auto;padding:0 max(5vw,20px) calc(var(--tabh,64px) + 96px)}
+
+.cat{display:flex;align-items:center;gap:var(--s8);margin:var(--s24) 0 var(--s4);font-size:var(--t13);color:var(--mute)}
+.cat i{width:10px;height:10px;border-radius:50%;flex:none}
+.cat span{order:3}
+.cat::after{content:"";flex:1;height:1px;background:var(--line);order:2}
+.item{display:flex;align-items:center;gap:var(--s12);padding:var(--s8) 0;min-height:72px}
+.blob,.thumb{width:44px;height:44px;border-radius:50%;flex:none;object-fit:cover}
+.blob{display:flex;align-items:center;justify-content:center}
+.blob svg{width:26px;height:26px}
+.blob.art svg{width:36px;height:36px}
+.info{flex:1}
+.info b{display:block;font-weight:500;font-size:var(--t16);line-height:1.3}
+.info small{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s8);color:var(--mute);font-size:var(--t13);margin-top:1px}
+.tag{display:inline;color:var(--mute);font-size:var(--t13);background:none;border:0;padding:0}
+button.tag{min-height:32px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+button.tag::after{content:" ⇄";color:var(--mute);text-decoration:none}
+.extn{display:block;color:var(--ext);font-size:var(--t13);margin-top:2px}
+.extn::before{content:"● ";font-size:9px}
+.ctrls{display:flex;flex-direction:column;gap:var(--s4);align-items:flex-end}
+.sl{display:block;font-size:var(--t13);color:var(--mute);font-style:normal;text-align:center}
+.qc{display:flex;align-items:center;border-bottom:2px solid transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.qc button{width:44px;height:44px;border:0;background:transparent;font-size:var(--t22);font-weight:300;line-height:1;color:var(--ink);touch-action:manipulation}
+.qc .num{min-width:48px;height:44px;border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;color:inherit}
+.qc .num b{font-size:var(--t22);font-weight:300}
+.qc .num i{font-style:normal;font-size:var(--t13);color:var(--mute)}
+.qc.on{border-bottom-color:var(--acc)}.qc.box.on{border-bottom-color:var(--box)}
+.qc.on .num b{font-weight:800}
+.qc.on .num i{color:var(--acc)}.qc.box.on .num i{color:var(--box)}
+.qc:not(.on) [data-act=minus]{opacity:.25}
+.qc.pop .num b{animation:pop .25s ease-out}
+@keyframes pop{50%{transform:scale(1.2)}}
+.empty{display:flex;align-items:center;gap:var(--s12);padding:var(--s24) 0;font-size:var(--t14);color:var(--mute)}
+.empty svg{width:40px;height:40px;flex:none;opacity:.8}
+
+.obar{position:fixed;left:0;right:0;bottom:var(--tabh,64px);z-index:5;background:color-mix(in srgb,var(--bg) 96%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.obar>div{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:var(--s8);padding:var(--s8) max(5vw,20px)}
+.obar .crt{display:none}
+.obar .cnt{flex:1;text-align:start;background:none;border:0;color:inherit;font-size:var(--t16);min-height:var(--b48);padding:0;line-height:1.25}
+.obar .cnt b{font-weight:800}
+.obar .cnt small{display:block;font-size:var(--t13);color:var(--mute)}
+.obar .go{border:0;background:var(--pri);color:var(--on-pri);font-weight:500;border-radius:999px;min-height:var(--b48);padding:0 var(--s24);font-size:var(--t16)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding-bottom:var(--bot)}
+.tabs button{border:0;background:none;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:var(--t13);color:var(--mute);position:relative;padding:0 2px}
+.tabs button.on{color:var(--ink);font-weight:700}
+.tabs svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.badge{position:absolute;top:6px;inset-inline-start:calc(50% + 6px);background:var(--danger);color:var(--on-danger);font-size:11px;line-height:16px;border-radius:999px;padding:0 5px;font-weight:700;min-width:16px;text-align:center}
+.badge.dot{min-width:8px;height:8px;padding:0}
+
+.page{padding-top:calc(var(--top) + var(--s24))}
+.ph{display:flex;align-items:center;gap:var(--s8);margin-bottom:var(--s8)}
+.ph h2{font-size:var(--t32);font-weight:300;margin:0;flex:1;line-height:1.1}
+.sub{color:var(--mute);margin:0 0 var(--s8);font-size:var(--t14)}
+.card{background:var(--card);border-top:1px solid var(--line);padding:var(--s16) 0;margin:var(--s16) 0 0}
+.card h3{margin:0 0 var(--s8);font-size:var(--t18);font-weight:700;display:flex;align-items:center;gap:var(--s8);line-height:1.3}
+.card h3 small{color:var(--mute);font-weight:400;font-size:var(--t14);flex:1}
+.ok{color:var(--acc);font-size:var(--t14);font-weight:700}
+.msg{white-space:pre-wrap;background:var(--soft);border-radius:var(--r16);padding:var(--s12) var(--s16);font-size:var(--t14);margin:var(--s8) 0 var(--s12)}
+.wa{background:var(--wa);color:var(--on-wa)}
+.wa.sent{background:transparent;color:var(--wa);border:1px solid var(--wa)}
+details.card summary{cursor:pointer;font-weight:500;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:44px}
+details.card summary small{color:var(--mute)}
+.er{display:flex;align-items:center;gap:var(--s8);padding:var(--s8) 0;border-bottom:1px solid var(--line);min-height:56px}
+.er:last-child{border-bottom:0}
+.er b{flex:1;font-weight:500}
+.er small{color:var(--ext);font-size:var(--t14)}
+.er.col{flex-direction:column;align-items:stretch}
+.er.col b{font-weight:400}
+.opts{display:flex;flex-wrap:wrap;gap:var(--s8)}
+.nr{display:block;font-size:var(--t13);color:var(--box);font-weight:400}
+.x{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--mute);font-size:var(--t22);font-weight:300;flex:none}
+.bad{background:var(--ext-s);border:0;border-radius:var(--r16);padding:var(--s16)}
+.bub{background:var(--soft);border-radius:var(--r16) var(--r16) 4px var(--r16);padding:var(--s12);margin:var(--s8) 0;white-space:pre-wrap;font-size:var(--t14)}
+.bub time{display:block;font-size:var(--t13);color:var(--mute);margin-top:var(--s4)}
+.sec-t{font-size:var(--t13);color:var(--mute);margin:var(--s24) 0 var(--s8)}
+.set{display:flex;justify-content:space-between;align-items:center;gap:var(--s8);width:100%;min-height:var(--b56);padding:var(--s8) 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:start}
+.set small{color:var(--mute);font-size:var(--t13)}
+.set .chev::after{content:"‹";font-size:var(--t22);color:var(--mute);font-weight:300}
+.seg{display:flex;background:var(--soft);border-radius:999px;padding:3px}
+.seg button{flex:1;border:0;background:transparent;min-height:var(--b40);border-radius:999px;font-size:var(--t14);color:var(--mute)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:700}
+.seg.pack button.on{background:var(--box);color:var(--on-box)}
+.seg.pack button.on.u{background:var(--acc);color:var(--on-acc)}
+.lrow{display:flex;align-items:center;gap:var(--s12);width:100%;min-height:64px;padding:var(--s8) 0;border:0;background:none;text-align:start}
+.lrow b{display:block;font-weight:500}
+.lrow small{display:block;color:var(--mute);font-size:var(--t13)}
+.lrow .grow{flex:1}
+.hid{font-size:var(--t13);color:var(--mute)}
+.warn{background:var(--box-s);color:var(--ink);border-radius:var(--r16);padding:var(--s12) var(--s16);font-size:var(--t14);margin:var(--s12) 0}
+label.lb{display:block;font-size:var(--t13);color:var(--mute);margin:var(--s16) 0 0}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:var(--s12);min-height:var(--b48);margin-top:var(--s12)}
+.sw input{appearance:none;-webkit-appearance:none;width:52px;height:32px;border-radius:999px;background:var(--line);position:relative;margin:0;flex:none;cursor:pointer}
+.sw input::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:inset-inline-start .2s}
+.sw input:checked{background:var(--acc)}.sw input:checked::after{inset-inline-start:23px}
+.srow{display:flex;gap:var(--s8);align-items:center;margin-bottom:var(--s8)}
+.srow select,.srow input{flex:1}
+.srow .seg{flex:0 0 140px}
+.imgbox{display:flex;align-items:center;gap:var(--s12);margin-top:var(--s8)}
+.imgbox .thumb,.imgbox .ph0{width:72px;height:72px;border-radius:50%}
+.ph0{display:flex;align-items:center;justify-content:center;background:var(--soft);flex:none}
+.ph0 svg{width:36px;height:36px}
+
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(10,16,12,.35);display:flex;align-items:flex-end;justify-content:center}
+.panel{background:var(--card);width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:var(--r24) var(--r24) 0 0;padding:0 max(5vw,20px) calc(var(--s24) + var(--bot));animation:up .22s ease-out;overscroll-behavior:contain}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}
+.grab{position:sticky;top:0;background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:var(--s8) 0;z-index:1;touch-action:none}
+.grab::before{content:"";position:absolute;top:8px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--line)}
+.grab .close{margin-top:var(--s12);background:none;border:0;color:var(--mute);min-height:44px;padding:0 var(--s4);font-size:var(--t14)}
+.panel h3{margin:0 0 var(--s4);font-size:var(--t22);font-weight:700;display:flex;align-items:center;gap:var(--s8);line-height:1.25}
+.panel h3 svg{width:28px;height:28px;flex:none}
+.panel .sub{margin-bottom:var(--s12)}
+.pick{display:flex;align-items:center;gap:var(--s12);width:100%;min-height:var(--b56);border-radius:var(--r16);border:1px solid var(--line);background:transparent;padding:var(--s8) var(--s16);margin-bottom:var(--s8);text-align:start;font-size:var(--t18);font-weight:500}
+.pick small{color:var(--mute);font-size:var(--t14);font-weight:400;flex:1}
+.pick em{font-style:normal;font-size:var(--t13);color:var(--acc)}
+.pick.pref{border-color:var(--ink)}
+.link{background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;min-height:var(--b48);font-size:var(--t16);width:100%}
+.wheel{position:relative;height:220px;width:120px;margin:0 auto;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
+.wheel::-webkit-scrollbar{display:none}
+.wheel div{height:44px;display:flex;align-items:center;justify-content:center;font-size:var(--t22);font-weight:300;scroll-snap-align:center;color:var(--mute)}
+.wheel div.c{color:var(--ink);font-weight:800}
+.wheelwrap{position:relative;margin:var(--s12) 0 var(--s16)}
+.wheelwrap::after{content:"";position:absolute;left:50%;top:50%;width:120px;height:44px;margin:-22px 0 0 -60px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none}
+.wheel .pad{height:88px;scroll-snap-align:none}
+.toast{position:fixed;top:calc(var(--top) + 12px);left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100vw - 32px);background:var(--pri);color:var(--on-pri);padding:var(--s8) var(--s16);border-radius:999px;font-size:var(--t14);z-index:30;max-width:90vw;text-align:center}
+@media(max-width:360px){.ttl h1{font-size:var(--t28)}}
+.tbtns{display:flex;gap:var(--s8)}
+.artgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:var(--s4);max-height:240px;overflow-y:auto;margin-top:var(--s12);padding:var(--s4);background:var(--soft);border-radius:var(--r16)}
+.artgrid button{border:2px solid transparent;background:var(--card);border-radius:var(--r12);min-height:52px;padding:4px}
+.artgrid button.on{border-color:var(--acc)}
+.artgrid svg{width:40px;height:40px}
+.pnote{display:block;font-size:var(--t13);color:var(--box);margin-top:1px}
+.qov{position:fixed;inset:0;z-index:25;background:rgba(10,16,12,.18)}
+.qpop{position:fixed;width:180px;background:var(--card);border:1px solid var(--line);border-radius:var(--r24);box-shadow:0 18px 40px rgba(0,0,0,.18);padding:var(--s16) var(--s12) var(--s12);text-align:center}
+.qpop>b{display:block;font-size:var(--t16);font-weight:700;line-height:1.25}
+.qpop>small{display:block;font-size:var(--t13);color:var(--mute)}
+.qpop .wheelwrap{margin:var(--s8) 0}
+.qpop .wheel{height:176px;width:100%}
+.qpop .wheel .pad{height:66px}
+.qpop .wheelwrap::after{width:100%;left:0;margin-left:0}
+.qpop .btn{min-height:var(--b48);font-size:var(--t16)}
+.toast.undo{display:flex;align-items:center;gap:var(--s12);padding:var(--s4) var(--s4) var(--s4) var(--s16)}
+.toast.undo span{flex:1}.toast.undo button{flex:none;white-space:nowrap;border:0;background:var(--on-pri);color:var(--pri);border-radius:999px;min-height:var(--b40);padding:0 var(--s16);font-weight:700;font-size:var(--t14)}
+:root{--tm:85%}@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--tm:22%}}:root[data-theme=dark]{--tm:22%}
+@media(prefers-reduced-motion:reduce){.qc.pop .num b,.panel{animation:none}}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="tomato" viewBox="0 0 40 40"><circle cx="20" cy="23" r="13" fill="#f0644a"/><circle cx="15" cy="19" r="3.5" fill="#fff" opacity=".45"/><path d="M13 12c3 1 5 1 7-2 2 3 4 3 7 2-1 3-3 4-7 4s-6-1-7-4z" fill="#4caf6a"/></symbol>
+<symbol id="carrot" viewBox="0 0 40 40"><path d="M26 12L10 32c-1 1 0 2 1 1l19-14c2-2 0-6-4-7z" fill="#f59a3c"/><path d="M27 11c1-4 4-6 7-6-1 3-2 5-5 6 3-1 6 0 7 2-3 1-6 1-8-1z" fill="#4caf6a"/></symbol>
+<symbol id="lemon" viewBox="0 0 40 40"><ellipse cx="20" cy="21" rx="14" ry="11" fill="#f7d34a"/><circle cx="34" cy="21" r="2" fill="#f7d34a"/><ellipse cx="15" cy="17" rx="4" ry="2.5" fill="#fff" opacity=".5"/></symbol>
+<symbol id="apple" viewBox="0 0 40 40"><path d="M20 13c-4-3-12-2-12 8 0 8 6 14 12 12 6 2 12-4 12-12 0-10-8-11-12-8z" fill="#ef5a4c"/><path d="M20 13c0-3 1-6 3-7" stroke="#7a5236" stroke-width="2" fill="none"/><path d="M22 9c3-3 7-3 9-1-3 2-6 2-9 1z" fill="#4caf6a"/></symbol>
+<symbol id="leaf" viewBox="0 0 40 40"><path d="M8 32C8 16 18 7 33 7c0 15-9 25-25 25z" fill="#5cb874"/><path d="M8 32L26 14" stroke="#fff" stroke-width="1.6" opacity=".7"/></symbol>
+<symbol id="mushroom" viewBox="0 0 40 40"><path d="M6 22c0-8 6-14 14-14s14 6 14 14z" fill="#d9a77a"/><rect x="15" y="22" width="10" height="11" rx="4" fill="#efdcc6"/><circle cx="14" cy="16" r="2" fill="#fff" opacity=".6"/></symbol>
+<symbol id="pod" viewBox="0 0 40 40"><path d="M6 28c6-12 18-18 28-18-4 10-16 18-28 18z" fill="#6cc07f"/><circle cx="14" cy="23" r="2.6" fill="#a7e0a8"/><circle cx="20" cy="19.5" r="2.6" fill="#a7e0a8"/><circle cx="26" cy="16" r="2.6" fill="#a7e0a8"/></symbol>
+<symbol id="sprout" viewBox="0 0 40 40"><path d="M20 34V18" stroke="#5cb874" stroke-width="2.4"/><path d="M20 20c-2-6-8-8-12-6 1 5 6 8 12 6z" fill="#7cc98d"/><path d="M20 18c2-6 8-8 12-6-1 5-6 8-12 6z" fill="#5cb874"/></symbol>
+<symbol id="lettuce" viewBox="0 0 40 40"><circle cx="20" cy="22" r="13" fill="#a5dc90"/><path d="M20 10c-4 4-4 18 0 25M12 14c4 5 6 12 8 21M28 14c-4 5-6 12-8 21" stroke="#5cb874" stroke-width="1.6" fill="none"/></symbol>
+<symbol id="citrus" viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="#f7a33c"/><circle cx="20" cy="20" r="11" fill="#ffd27a"/><path d="M20 9v22M9 20h22M12 12l16 16M28 12L12 28" stroke="#f7a33c" stroke-width="1.4"/></symbol>
+<symbol id="cherry" viewBox="0 0 40 40"><circle cx="13" cy="28" r="6.5" fill="#e04a5a"/><circle cx="27" cy="27" r="6.5" fill="#e04a5a"/><path d="M13 22c2-8 6-12 10-14M27 21c-1-6-2-10-4-13" stroke="#6b8f3a" stroke-width="1.8" fill="none"/></symbol>
+<symbol id="crate" viewBox="0 0 40 40"><path d="M6 16h28l-3 18H9z" fill="#d98a3d"/><path d="M6 16h28l-1 5H7z" fill="#eaa865"/><rect x="9" y="25" width="22" height="2" fill="#b56f2c"/><circle cx="14" cy="13" r="5" fill="#f0644a"/><circle cx="22" cy="12" r="5" fill="#7cbf45"/><circle cx="28" cy="14" r="4" fill="#f7d34a"/></symbol>
+</svg>
+
+<section id="v-order">
+<div class="ttl"><div><small id="date"></small><h1><strong>הזמנה</strong> להיום</h1></div><div class="tbtns"><button class="pill" id="clearO" type="button" hidden>ניקוי</button><button class="pill" id="likeLast" type="button">כמו בהזמנה הקודמת</button></div></div>
+<div class="head"><input class="field" id="q" type="search" placeholder="חיפוש מוצר…" autocomplete="off" aria-label="חיפוש מוצר"><select class="field" id="catSel" aria-label="קטגוריה"></select></div>
+<main id="list"></main>
+</section>
+<section id="v-ext" hidden><main class="page" id="ext"></main></section>
+<section id="v-sum" hidden><main class="page" id="sum"></main></section>
+<section id="v-hist" hidden><main class="page" id="hist"></main></section>
+<section id="v-set" hidden><main class="page" id="set"></main></section>
+<section id="v-cat" hidden><main class="page" id="catm"></main></section>
+<section id="v-sups" hidden><main class="page" id="supm"></main></section>
+
+<div class="obar" id="obar" hidden><div><svg class="crt" id="crt" aria-hidden="true"><use href="#crate"/></svg><button class="cnt" id="onlyOn" type="button" aria-pressed="false"><b id="obN"></b> מוצרים · <span id="obS"></span> ספקים<small id="onlyLbl">הקשה: רק מה שבהזמנה</small></button><button class="go" id="finish" type="button">סיום</button></div></div>
+<nav class="tabs" id="tabs">
+<button data-v="order" class="on" type="button"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>הזמנה</button>
+<button data-v="ext" type="button"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>ספק חוץ<i class="badge dot" id="extBadge" hidden></i></button>
+<button data-v="sum" type="button"><svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-6z"/></svg>שליחה<i class="badge" id="badge" hidden></i></button>
+<button data-v="hist" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>היסטוריה</button>
+<button data-v="set" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>הגדרות<i class="badge dot" id="setBadge" hidden></i></button>
+</nav>
+<div id="sheet"></div>
+<input type="file" id="imgIn" accept="image/*" hidden>
+<input type="file" id="bkIn" accept="application/json,.json" hidden>
+
+<script>
+{
+const VER='0.5.3';
+const KEY='yerakot-data';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ico=id=>`<svg aria-hidden="true"><use href="#${id}"/></svg>`;
+const pk=(p,q)=>p==='א'?(q===1?'ארגז':q?'ארגזים':'ארגז'):p==='ח'?(q===1?'חבילה':q?'חבילות':'חבילה'):(q===1?'יחידה':q?'יחידות':'יחידה');
+const fmtD=d=>new Date(d).toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'});
+const fmtT=d=>new Date(d).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* ---------- seed (sample assignment until the questionnaire returns) ---------- */
+const SEED_SUP=[['ילת','דוד'],['שוק',''],['ד"ר פומלה',''],['ד"ברי','אביעד'],['יוחאי',''],['יוסי כהן',''],['אדי',''],['יוסרי',''],['משק כפרי חן','לירז']];
+const SEEDP=[["ירקות","אבוקדו",[[1,"א"],[4,"א"]],false,"","avocado"],["ירקות","אספרגוס ירוק",[[0,"י"]],false,"","asp|#6bb64a"],["ירקות","אספרגוס לבן",[],true,"","asp|#eee3c0"],["ירקות","ארטישוק",[[1,"א"]],false,"","artichoke"],["ירקות","ארטישוק ירושלמי",[[1,"י"],[2,"י"]],false,"","jart"],["ירקות","בטטה",[[1,"א"]],false,"","sweetpot"],["ירקות","בצל יבש",[[1,"א"]],false,"","onion|#d9a45b"],["ירקות","בצל סגול",[[1,"א"]],false,"","onion|#8e3b6e"],["ירקות","בצלי שאלוט",[[0,"י"],[2,"י"]],false,"","shallot"],["ירקות","ברוקולי",[[5,"א"]],false,"7 יחידות בארגז","broccoli"],["ירקות","גזר",[[1,"א"]],false,"","carrot"],["ירקות","שק גזר למטבח",[[1,"א"]],false,"","sack"],["ירקות","דלורית",[[1,"א"]],false,"","butternut"],["ירקות","דלעת ערמונים",[[1,"א"],[2,"א"]],false,"","pumpkin|#3f6b3a"],["ירקות","דלעת",[[1,"י"]],false,"","pumpkin|#f08a2c"],["ירקות","שורש חזרת",[[1,"י"],[2,"י"]],false,"","horse"],["ירקות","חציל",[[1,"א"],[4,"א"]],false,"","eggplant|#5b2d6e"],["ירקות","חציל בלאדי",[[1,"א"]],false,"","eggplant|#9a6bbd|1"],["ירקות","כרוב אדום",[[1,"א"]],false,"","cabbage|#8e3b7e"],["ירקות","כרוב ירוק",[[1,"א"]],false,"","cabbage|#9fd27a"],["ירקות","כרובית",[[1,"א"],[2,"א"]],false,"","cauli"],["ירקות","מלפפון",[[4,"א"],[1,"א"]],false,"","cuc|#4e9a3e"],["ירקות","מלפפונים מיני",[[8,"א"]],false,"","cuc|#5aa84a|1"],["ירקות","פלפלונים",[[8,"א"]],false,"","minipep"],["ירקות","סלק",[[1,"א"]],false,"","beet"],["ירקות","סלק ואקום",[[2,"א"],[0,"א"]],false,"","beetvac"],["ירקות","עגבניה",[[1,"א"],[4,"א"]],false,"","round|#ee4b3a"],["ירקות","עגבניה מגי",[[1,"א"]],false,"","magi"],["ירקות","עגבניות אשכולות",[[1,"א"],[4,"א"]],false,"","cluster"],["ירקות","שרי סוכריה",[[1,"א"]],false,"","cherry|#e8443a"],["ירקות","עגבניות שרי תמר",[[1,"א"]],false,"","cherryoval"],["ירקות","עגבניות תמר",[[1,"א"]],false,"","oval"],["ירקות","פלפל אדום",[[1,"א"],[4,"א"]],false,"","pepper|#e8443a"],["ירקות","פלפל בהיר",[[1,"א"]],false,"","pepper|#c3e07a"],["ירקות","פלפל כהה",[[1,"א"]],false,"","pepper|#3f8f3a"],["ירקות","פלפל צהוב",[[1,"א"]],false,"","pepper|#f5c63b"],["ירקות","פלפל כתום",[[1,"א"]],false,"","pepper|#f59a3c"],["ירקות","פלפל חריף",[[1,"א"]],false,"","hot|#d93a2e"],["ירקות","פלפל צ'ילי ארוז",[[0,"י"]],false,"","chilipack"],["ירקות","פלפל שושקה מתוק",[[1,"א"]],false,"","shushka"],["ירקות","כרישה (פרסה)",[[5,"א"],[1,"א"]],false,"","leek"],["ירקות","צנון",[[1,"א"]],false,"","daikon"],["ירקות","קולרבי",[[1,"א"]],false,"","kohl"],["ירקות","צנוניות עלים",[[1,"א"],[0,"א"]],false,"","radish"],["ירקות","צנוניות מיני",[[1,"א"],[0,"א"]],false,"","radishmini"],["ירקות","קישוא",[[1,"א"]],false,"","cuc|#a9d47a"],["ירקות","זוקיני",[[1,"א"]],false,"","cuc|#2f6b2a"],["ירקות","שום טרי",[[1,"א"]],false,"","garlic"],["ירקות","שום קלוף",[[0,"י"],[2,"י"],[3,"י"]],false,"","garlicpeel"],["ירקות","שומר",[[1,"א"]],false,"","fennel"],["ירקות","שרי ליקופן",[[1,"א"]],false,"","cherry|#b82a2a"],["ירקות","שרי צהוב",[[1,"א"]],false,"","cherry|#f5c63b"],["ירקות","שרי כתום",[[8,"א"]],false,"","cherry|#f59a3c"],["ירקות","תירס רגיל",[[1,"א"]],false,"","corn|#f2c94c"],["ירקות","תירס גילי צהוב",[[1,"א"]],false,"","corn|#f7d85a"],["ירקות","תירס גילי לבן",[[1,"א"]],false,"","corn|#f1e9c4"],["ירקות","תפו\"א גורמה דוד משה לבן",[[1,"א"]],false,"","potato|#d9b27a"],["ירקות","תפו\"א אדום דזירה דוד משה",[[1,"א"]],false,"","potato|#b8574a"],["ירקות","תפו\"א בייבי גורמה דוד משה",[[1,"א"]],false,"","babypot"],["פירות","אבטיח",[[1,"א"],[2,"א"]],false,"","watermelon"],["פירות","אבטיח חתוך",[],true,"","melonslice"],["פירות","אגסים",[[1,"א"],[2,"א"]],false,"","pear|#c8d65a"],["פירות","אנונה",[[1,"א"],[2,"א"],[3,"א"]],false,"","annona"],["פירות","אפרסמון רגיל",[[1,"א"],[2,"א"]],false,"","persimmon|#f28a2c"],["פירות","אפרסמון קרמבו",[[1,"א"],[2,"א"],[3,"א"]],false,"","persimmon|#e2582e"],["פירות","אפרסק רגיל",[[1,"א"],[2,"א"]],false,"","peach|#f6a77a"],["פירות","אפרסק פיתה",[[1,"א"],[2,"א"]],false,"","peach|#f5b38a|1"],["פירות","בננות",[[1,"א"]],false,"","banana"],["פירות","דובדבן אדום",[[1,"א"],[2,"א"]],false,"","cherries|#a8162e"],["פירות","דובדבן לבן",[[1,"א"],[2,"א"]],false,"","cherries|#f3b96a"],["פירות","חבושים",[[1,"א"],[2,"א"]],false,"","quince"],["פירות","גויאבה",[[1,"א"],[2,"א"]],false,"","guava"],["פירות","ליצ'י",[[1,"א"],[2,"א"]],false,"","lychee"],["פירות","מלון כתום",[[1,"א"],[2,"א"],[3,"א"]],false,"","cantaloupe"],["פירות","מלון ספרדי",[[1,"א"],[2,"א"],[3,"א"]],false,"","spmelon"],["פירות","משמש",[[1,"א"],[2,"א"]],false,"","apricot"],["פירות","מנגו",[[1,"א"],[2,"א"],[3,"א"]],false,"","mango"],["פירות","נקטרינות",[[1,"א"],[2,"א"]],false,"","nectarine"],["פירות","ענבים ירוקים",[[1,"א"],[2,"א"]],false,"","grapes|#a9cf5a"],["פירות","ענבים שחורים",[[1,"א"],[2,"א"]],false,"","grapes|#4a2a5a"],["פירות","פסיפלורה",[[1,"א"],[2,"א"],[3,"א"]],false,"","passion"],["פירות","פפאיה",[[1,"א"],[2,"א"]],false,"","papaya"],["פירות","קיווי ירוק",[[1,"א"],[2,"א"],[3,"א"]],false,"","kiwi|#7cbf45"],["פירות","קיווי צהוב",[[1,"א"],[2,"א"]],false,"","kiwi|#f2d14a"],["פירות","קרמבולה",[[2,"א"],[3,"א"]],false,"","starfruit"],["פירות","פטאיה",[[2,"א"],[3,"א"],[1,"א"]],false,"","dragon"],["פירות","שזיף ירוק",[[2,"א"],[3,"א"],[1,"א"]],false,"","plum|#a9cf5a"],["פירות","שזיף מטלי",[[2,"א"],[3,"א"],[1,"א"]],false,"","plum|#5a2a4a"],["פירות","שזיף סנטה רוזה",[[2,"א"],[1,"א"]],false,"","plum|#c22a3a"],["פירות","שזיף שגיב",[[2,"א"],[1,"א"]],false,"","plum|#6b3a8a"],["פירות","שסק",[[2,"א"],[1,"א"],[3,"א"]],false,"","loquat"],["פירות","שקדים ירוקים",[[1,"א"],[2,"א"]],false,"","almond"],["פירות","תאנים",[[2,"א"]],false,"","fig"],["פירות","תות שדה",[[2,"א"],[3,"א"]],false,"","strawberry"],["פירות","תמר צהוב",[[1,"א"],[2,"א"]],false,"","dates"],["פירות","אננס דל מונטה",[[2,"א"],[3,"א"]],false,"","pineapple"],["פירות","אננס מקולף",[],true,"","pineapple"],["פירות","סברס",[[2,"א"],[1,"א"],[3,"א"]],false,"","sabra"],["פירות","סברס מקולף",[],true,"","sabra"],["פירות","רימון",[[1,"א"],[2,"א"]],false,"","pomegranate"],["פירות","רימון מקולף",[[6,"י"],[2,"י"],[3,"י"]],false,"","pomseeds"],["פירות","אוכמניות",[[3,"א"],[2,"א"]],false,"","blueberry"],["פירות","פטל אדום",[[2,"י"],[3,"י"]],false,"","berry|#d9304a"],["פירות","פטל שחור",[[2,"י"],[3,"י"]],false,"","berry|#3a2240"],["פירות הדר","אשכולית צהובה",[[1,"א"],[2,"א"]],false,"","citrus|#f5d03b|#f7e07a|1"],["פירות הדר","אשכולית אדומה",[[1,"א"],[2,"א"]],false,"","citrus|#f2a03a|#f2707a|1"],["פירות הדר","לימון",[[1,"א"],[2,"א"]],false,"","lemon"],["פירות הדר","ליים",[[1,"א"],[2,"א"]],false,"","citrus|#7cbf45|#c9e58a"],["פירות הדר","פומלית",[[1,"א"],[2,"א"]],false,"","citrus|#c3d84a|#eef0a0|1"],["פירות הדר","קלמנטינות",[[1,"א"],[2,"א"]],false,"","citrus|#f7902a"],["פירות הדר","תפוז דם",[[1,"א"],[2,"א"]],false,"","citrus|#f28a2c|#c8303f"],["פירות הדר","תפוז למיץ",[[1,"א"],[2,"א"]],false,"","juice"],["פירות הדר","תפוזים",[[1,"א"],[2,"א"]],false,"","citrus|#f59a3c|#ffc46a"],["פירות הדר","פומלה",[[1,"א"],[2,"א"]],false,"","citrus|#d9e05a|#f6efc0|1"],["פירות הדר","פומלה מקולפת",[[6,"י"],[2,"י"],[7,"א"]],false,"","pomelopeel"],["תפוחים","תפוח חרמון (סטרקינג)",[[1,"א"],[2,"א"]],false,"","appleC|#a8162e"],["תפוחים","תפוח מוזהב",[[1,"א"],[2,"א"]],false,"","appleC|#f2d14a"],["תפוחים","תפוח גאלה",[[1,"א"],[2,"א"]],false,"","appleC|#e2482e|#f2c94c"],["תפוחים","תפוח סמיט",[[1,"א"],[2,"א"]],false,"","appleC|#7cbf45"],["תפוחים","תפוח פינק ליידי",[[1,"א"],[2,"א"]],false,"","appleC|#f27a8a|#f2c94c"],["ירוקים לבישול","אפונה",[[1,"א"]],false,"","peapod"],["ירוקים לבישול","אפונה סינית",[[0,"י"],[2,"י"]],false,"","snowpea"],["ירוקים לבישול","במיה",[[2,"י"],[3,"י"],[0,"י"]],false,"","okra"],["ירוקים לבישול","לוביה",[[1,"א"]],false,"","longbean"],["ירוקים לבישול","שעועית ירוקה דקה",[[2,"י"],[1,"א"],[0,"י"]],false,"","beans|#5aa84a"],["ירוקים לבישול","שעועית ירוקה שטופה",[[0,"י"]],false,"","beans|#5aa84a||1"],["ירוקים לבישול","שעועית ירוקה עבה",[[2,"י"],[1,"א"]],false,"","beans|#6fb04a|1"],["ירק ועשבי תיבול","אורגנו",[[0,"י"]],false,"","herb|#5a9a4a|small"],["ירק ועשבי תיבול","טרגון",[[0,"י"]],false,"","herb|#6aa84a|mid"],["ירק ועשבי תיבול","באקצ'וי",[[0,"י"]],false,"","bokchoy"],["ירק ועשבי תיבול","עלי קייל",[[0,"י"]],false,"","kale"],["ירק ועשבי תיבול","בזיליקום (ריחן)",[[0,"י"]],false,"","herb|#3f9a4a|big"],["ירק ועשבי תיבול","בצל ירוק",[[0,"י"]],false,"","greenonion"],["ירק ועשבי תיבול","עירית",[[0,"י"]],false,"","grass|#4e9a3e|2"],["ירק ועשבי תיבול","ג'ינג'ר",[[2,"א"],[3,"א"],[1,"א"]],false,"","ginger"],["ירק ועשבי תיבול","טימין",[[0,"י"]],false,"","herb|#7a9a5a|small"],["ירק ועשבי תיבול","קורנית",[[0,"י"]],false,"","herb|#8aa86a|small"],["ירק ועשבי תיבול","עלי מנגולד",[[0,"י"]],false,"","chard"],["ירק ועשבי תיבול","אנדיב",[[0,"י"]],false,"","endive"],["ירק ועשבי תיבול","לואיזה",[[0,"י"]],false,"","herb|#7cc06a|mid"],["ירק ועשבי תיבול","מרווה",[[0,"י"]],false,"","herb|#9ab08a|big"],["ירק ועשבי תיבול","למון גראס",[[0,"י"]],false,"","lemongrass"],["ירק ועשבי תיבול","ראשד",[[0,"י"]],false,"","cress"],["ירק ועשבי תיבול","מליסה",[[0,"י"]],false,"","herb|#6cc07f|big"],["ירק ועשבי תיבול","שיבא",[[0,"י"]],false,"","herb|#a9b8a0|mid"],["ירק ועשבי תיבול","רוזמרין",[[0,"י"]],false,"","herb|#4e7a4a|needle"],["ירק ועשבי תיבול","שורש פטרוזיליה",[[0,"י"]],false,"","proot"],["ירק ועשבי תיבול","סלרי ראש",[[0,"י"]],false,"","celery|head"],["ירק ועשבי תיבול","סלרי אמריקאי קצר",[[5,"א"],[0,"א"]],false,"","celery|short"],["ירק ועשבי תיבול","סלרי אמריקאי ארוך",[[0,"י"]],false,"","celery|long"],["ירק ועשבי תיבול","פטרוזיליה",[[0,"י"]],false,"","curly|#3f9a4a"],["ירק ועשבי תיבול","שמיר",[[0,"י"]],false,"","dill"],["ירק ועשבי תיבול","כוסברה",[[0,"י"]],false,"","curly|#6cc07f"],["ירק ועשבי תיבול","נענע",[[0,"י"]],false,"","herb|#3fb36a|big"],["עלים וחסות","תרד גוליבר",[[2,"י"],[0,"י"]],false,"","spinach|#2f7a3a"],["עלים וחסות","תרד ניו-זילנד",[[0,"י"]],false,"","spinach|#3f8a4a"],["עלים וחסות","תרד בייבי",[[0,"י"]],false,"","spinach|#5aa84a|1"],["עלים וחסות","ארוגולה (רוקט)",[[0,"י"]],false,"","arugula"],["עלים וחסות","חסה סלנובה כרמלים",[[0,"י"]],false,"","lettuce|#7cc06a"],["עלים וחסות","חסה לאליק כרמלים",[[0,"י"]],false,"","lettuce|#9a4a5e"],["עלים וחסות","חסה עגולה",[[5,"י"],[0,"י"]],false,"","lettuce|#9fd27a"],["עלים וחסות","חסה אייסברג",[[0,"י"]],false,"","lettuce|#c3e6a0|ice"],["עלים וחסות","חסה קיסר",[[5,"א"],[0,"א"]],false,"","lettuce|#5aa84a|romaine"],["עלים וחסות","חסה ערבית מהדרין",[[0,"א"]],false,"","lettuce|#6cc07f|romaine"],["עלים וחסות","עלי בייבי מיקס",[[0,"א"]],false,"","babymix"],["עלים וחסות","לקט מושבה שטראוס",[[0,"י"]],false,"","bag|#d9304a"],["עלים וחסות","לקט ארוגות שטראוס",[[0,"י"]],false,"","bag|#2f8a52"],["פטריות","פטריות ערד",[[0,"א"]],false,"","mush|#f2ece0|#e8e0d0"],["פטריות","פטריות יער",[[0,"י"]],false,"","mush|#a8743f|#efe2cc|wild"],["פטריות","פטריות שיטאקי",[[0,"י"]],false,"","mush|#7a4a2a|#efe2cc|flat"],["פטריות","פטריות פורטובלו",[[0,"א"]],false,"","mush|#8a5a3a|#e8dccb|flat"],["פטריות","פטריות שימג' חום",[[0,"י"]],false,"","mush|#9a6a42|#f2ead8|cluster"],["פטריות","פטריות שימג' לבן",[[0,"י"]],false,"","mush|#f4efe4|#f8f4ea|cluster"],["פטריות","פטריות מלך היער",[[0,"י"]],false,"","mush|#b08a62|#f2ead8|king"],["נבטים","נבטי אלפלפא",[[0,"י"]],false,"","sprouts|#9fd27a"],["נבטים","נבטים סיניים",[[0,"י"]],false,"","sprouts|#f2d14a|1"],["נבטים","נבטי ברוקולי",[[0,"י"]],false,"","sprouts|#5aa84a"],["נבטים","נבטי חמניה",[[0,"י"]],false,"","sprouts|#7cc06a|1"],["נבטים","נבטוטים",[[0,"י"]],false,"","sprouts|#c3e6a0"],["קלוף וחתוך","כרוב ירוק מגורד",[],true,"","shred|#9fd27a"],["קלוף וחתוך","גזר מגורד",[],true,"","shred|#f59a3c"],["קלוף וחתוך","נשנושי גזר",[[0,"א"]],false,"","babycarrot"]];
+const ICON={'ירקות':'carrot','פירות':'cherry','פירות הדר':'citrus','תפוחים':'apple','ירוקים לבישול':'pod','ירק ועשבי תיבול':'leaf','עלים וחסות':'lettuce','פטריות':'mushroom','נבטים':'sprout','קלוף וחתוך':'carrot'};
+const catIco=c=>ICON[c]||'leaf';
+const TINT={'ירקות':'#ffe9dc','פירות':'#ffe3e6','פירות הדר':'#fff1d6','תפוחים':'#ffe5e1','ירוקים לבישול':'#e6f4e2','ירק ועשבי תיבול':'#e3f3e6','עלים וחסות':'#ebf6df','פטריות':'#f3ebe2','נבטים':'#e9f5e6','קלוף וחתוך':'#ffeede'};
+const DOT={'ירקות':'#f59a3c','פירות':'#e04a5a','פירות הדר':'#f7a33c','תפוחים':'#ef5a4c','ירוקים לבישול':'#6cc07f','ירק ועשבי תיבול':'#5cb874','עלים וחסות':'#8fcf6f','פטריות':'#c99a6c','נבטים':'#7cc98d','קלוף וחתוך':'#f59a3c'};
+const tint=c=>TINT[c]||'#eef3ec',dot=c=>DOT[c]||'#9fb5a5';
+/* ---------- illustrations (viewBox 0 0 48 48) ---------- */
+const LF='#4caf6a',LF2='#3f9a55',HL='<ellipse cx="18" cy="21" rx="3.5" ry="2.5" fill="#fff" opacity=".35"/>';
+const bell=(c,x=24,y=26,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M-10-8c4-4 16-4 20 0 5 5 4 16-2 22-4 4-12 4-16 0-6-6-7-17-2-22z" fill="${c}"/><path d="M-2-10c0-4 2-6 6-7" stroke="${LF2}" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="-5" cy="-1" rx="2.2" ry="5" fill="#fff" opacity=".3"/></g>`;
+const A={
+round:c=>`<circle cx="24" cy="27" r="15" fill="${c}"/>${HL}<path d="M16 13c4 1 6 1 8-3 2 4 4 4 8 3-1 4-4 5-8 5s-7-1-8-5z" fill="${LF}"/>`,
+magi:()=>`<ellipse cx="24" cy="28" rx="17" ry="13" fill="#e8443a"/><path d="M14 20q-4 8 0 16M24 16v24M34 20q4 8 0 16" stroke="#c6332a" stroke-width="1.6" fill="none" opacity=".7"/><path d="M17 14c3 1 5 1 7-3 2 4 4 4 7 3-1 3-4 4-7 4s-6-1-7-4z" fill="${LF}"/>`,
+oval:()=>`<ellipse cx="24" cy="27" rx="11" ry="15" fill="#e04a3a"/><ellipse cx="20" cy="21" rx="2.5" ry="4" fill="#fff" opacity=".35"/><path d="M18 12c2 1 4 1 6-3 2 4 4 4 6 3-1 3-3 4-6 4s-5-1-6-4z" fill="${LF}"/>`,
+cluster:()=>`<path d="M10 8c8 2 16 2 28 0M18 9v6M30 9v8M24 9v14" stroke="${LF2}" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="16" cy="22" r="8" fill="#e8443a"/><circle cx="31" cy="24" r="8" fill="#e04a3a"/><circle cx="23" cy="34" r="8" fill="#ee4b3a"/><circle cx="14" cy="20" r="2" fill="#fff" opacity=".4"/>`,
+cherry:c=>`<path d="M24 8v8M24 12l-8 6M24 12l8 5" stroke="${LF2}" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="15" cy="26" r="7" fill="${c}"/><circle cx="32" cy="25" r="7" fill="${c}"/><circle cx="24" cy="36" r="7" fill="${c}"/><circle cx="13" cy="24" r="1.8" fill="#fff" opacity=".45"/><circle cx="30" cy="23" r="1.8" fill="#fff" opacity=".45"/>`,
+cherryoval:()=>`<path d="M24 7v7M24 11l-8 6M24 11l8 5" stroke="${LF2}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="15" cy="27" rx="5.5" ry="8" fill="#e8443a"/><ellipse cx="32" cy="26" rx="5.5" ry="8" fill="#e04a3a"/><ellipse cx="24" cy="36" rx="5.5" ry="8" fill="#ee4b3a"/>`,
+pepper:c=>bell(c),
+hot:c=>`<path d="M14 12c-2 10 4 22 18 28 2 1 3-1 2-2-9-7-12-16-12-24" fill="${c}"/><path d="M14 12c1-4 5-6 9-4" stroke="${LF2}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+chilipack:()=>`<rect x="8" y="10" width="32" height="30" rx="5" fill="#eef3f6" stroke="#c9d6dd" stroke-width="1.5"/><path d="M15 17c-1 7 3 15 11 19M24 16c0 8 4 14 11 17" stroke="#d93a2e" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="8" y="10" width="32" height="6" rx="3" fill="#c9d6dd"/>`,
+shushka:()=>`<path d="M12 14c-3 9 2 22 16 26 3 1 6-1 5-4-3-9-7-17-12-22" fill="#b7d86a"/><path d="M12 14c1-4 5-6 9-4" stroke="${LF2}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M17 20c0 6 3 12 8 16" stroke="#fff" stroke-width="2" opacity=".35" fill="none"/>`,
+minipep:()=>bell('#e8443a',15,27,.55)+bell('#f5c63b',33,25,.55)+bell('#f59a3c',24,36,.55),
+cuc:(c,mini)=>mini?`<g transform="rotate(-30 24 24)"><rect x="8" y="12" width="26" height="9" rx="4.5" fill="${c}"/><rect x="14" y="26" width="26" height="9" rx="4.5" fill="${c}"/><g fill="#fff" opacity=".45"><circle cx="14" cy="16" r=".9"/><circle cx="21" cy="17" r=".9"/><circle cx="28" cy="16" r=".9"/><circle cx="20" cy="30" r=".9"/><circle cx="28" cy="31" r=".9"/><circle cx="35" cy="30" r=".9"/></g></g>`:`<g transform="rotate(-35 24 24)"><rect x="5" y="17" width="38" height="14" rx="7" fill="${c}"/><g fill="#fff" opacity=".45"><circle cx="12" cy="22" r="1"/><circle cx="19" cy="26" r="1"/><circle cx="26" cy="22" r="1"/><circle cx="33" cy="26" r="1"/></g><rect x="40" y="21" width="4" height="6" rx="2" fill="${LF2}"/></g>`,
+eggplant:(c,stripe)=>`<ellipse cx="21" cy="28" rx="11" ry="15" transform="rotate(-35 21 28)" fill="${c}"/>${stripe?'<path d="M14 36q6-10 16-18M12 30q6-8 13-14" stroke="#fff" stroke-width="2" opacity=".4" fill="none"/>':''}<path d="M28 12c3-4 8-5 11-2-3 0-4 2-4 4l-5 5z" fill="${LF}"/><ellipse cx="16" cy="25" rx="2.5" ry="5" transform="rotate(-35 16 25)" fill="#fff" opacity=".3"/>`,
+onion:c=>`<path d="M24 8c-3 6-14 10-14 21 0 8 6 12 14 12s14-4 14-12c0-11-11-15-14-21z" fill="${c}"/><path d="M24 12c-3 8-7 13-7 20M24 12c3 8 7 13 7 20" stroke="#fff" stroke-width="1.4" opacity=".35" fill="none"/><path d="M21 41l-2 3M24 41v4M27 41l2 3" stroke="#b08a5a" stroke-width="1.4"/>`,
+shallot:()=>`<path d="M17 12c-2 5-9 8-9 16 0 6 4 9 9 9s9-3 9-9c0-8-7-11-9-16z" fill="#b8704a"/><path d="M31 14c-2 5-9 8-9 16 0 6 4 9 9 9s9-3 9-9c0-8-7-11-9-16z" fill="#c98258"/>`,
+garlic:()=>`<path d="M24 6c0 6-14 10-14 22 0 8 7 12 14 12s14-4 14-12c0-12-14-16-14-22z" fill="#f4efe6" stroke="#ddd3c3" stroke-width="1.2"/><path d="M24 12c-4 8-6 16-5 27M24 12c4 8 6 16 5 27M24 12v28" stroke="#ddd3c3" stroke-width="1.2" fill="none"/><path d="M24 6V2" stroke="#9fc58a" stroke-width="2.5" stroke-linecap="round"/>`,
+garlicpeel:()=>`<path d="M14 14c-6 6-6 18 2 22 2-8 2-16-2-22z" fill="#f6f0dc" stroke="#e1d6b5" stroke-width="1.2"/><path d="M26 10c-7 7-6 20 3 25 2-9 1-18-3-25z" fill="#f8f2df" stroke="#e1d6b5" stroke-width="1.2"/><path d="M36 18c-5 5-4 14 2 17 2-6 1-12-2-17z" fill="#f6f0dc" stroke="#e1d6b5" stroke-width="1.2"/>`,
+carrot:()=>`<path d="M31 15L11 38c-1 1 0 3 2 2l22-17c3-3 0-8-4-8z" fill="#f59a3c"/><path d="M20 30l3 1M17 34l3 1M25 25l3 1" stroke="#d97b24" stroke-width="1.4"/><path d="M33 14c1-5 5-8 9-8-1 4-3 7-7 8 4-1 8 0 9 3-4 1-8 1-11-1z" fill="${LF}"/>`,
+sack:()=>`<path d="M12 16h24l4 24c0 3-2 4-4 4H12c-2 0-4-1-4-4z" fill="#c9a06a"/><path d="M12 16c4 3 20 3 24 0" stroke="#a87f4c" stroke-width="2" fill="none"/><path d="M18 16c-1-5 1-9 4-10M24 16c0-5 2-9 6-10M30 16c1-4 4-7 8-7" stroke="${LF}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M16 26h16M15 32h18" stroke="#a87f4c" stroke-width="1.4" opacity=".6"/>`,
+daikon:()=>`<path d="M24 14c-6 0-8 6-7 14 1 7 4 13 7 17 3-4 6-10 7-17 1-8-1-14-7-14z" fill="#f4f1ea" stroke="#ddd8cc" stroke-width="1.2"/><path d="M24 14c-2-5-6-8-10-9 1 5 4 8 10 9zM24 14c2-5 6-8 10-9-1 5-4 8-10 9zM24 14V4" stroke="${LF2}" stroke-width="1.5" fill="${LF}"/>`,
+radish:()=>`<path d="M24 22c-4-6-10-10-15-10 1 6 6 10 15 10zM24 22c4-6 10-10 15-10-1 6-6 10-15 10zM24 22c0-6 0-12-2-16" stroke="${LF2}" stroke-width="1.2" fill="${LF}"/><circle cx="24" cy="31" r="10" fill="#e0476b"/><path d="M24 41v5" stroke="#e0476b" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="27" r="2.2" fill="#fff" opacity=".4"/>`,
+radishmini:()=>`<circle cx="15" cy="28" r="7" fill="#e0476b"/><circle cx="33" cy="27" r="7" fill="#e0476b"/><circle cx="24" cy="37" r="7" fill="#d93b62"/><path d="M15 21v-6M33 20v-6M24 30v-6" stroke="${LF}" stroke-width="2.5" stroke-linecap="round"/><path d="M15 28h-.01" stroke="#fff"/>`,
+beet:()=>`<path d="M24 20c-3-6-8-11-14-12 1 6 6 11 14 12zM24 20c3-6 8-11 14-12-1 6-6 11-14 12z" fill="#5aa84a"/><path d="M24 20c-2-4-5-8-8-10M24 20c2-4 5-8 8-10" stroke="#a23a6b" stroke-width="1.4" fill="none"/><circle cx="24" cy="30" r="11" fill="#8a2557"/><path d="M24 41v5" stroke="#8a2557" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="26" r="2.4" fill="#fff" opacity=".3"/>`,
+beetvac:()=>`<rect x="8" y="12" width="32" height="28" rx="8" fill="#e9eef1" stroke="#cfd9de" stroke-width="1.5"/><circle cx="19" cy="27" r="7" fill="#8a2557"/><circle cx="30" cy="26" r="7" fill="#9a2d62"/><path d="M12 16h24" stroke="#fff" stroke-width="2" opacity=".7"/>`,
+kohl:()=>`<path d="M18 20c-3-6-3-11-1-15M24 18V5M30 20c3-6 3-11 1-15" stroke="#9fcf7a" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="17" cy="5" r="3" fill="#7cc06a"/><circle cx="31" cy="5" r="3" fill="#7cc06a"/><circle cx="24" cy="30" r="12" fill="#bfe08f"/><path d="M15 29q9 4 18 0" stroke="#9fcf7a" stroke-width="1.5" fill="none"/>`,
+horse:()=>`<path d="M30 8c-6 4-14 16-18 30-1 3 2 4 4 2 6-10 12-20 18-28 2-3-1-6-4-4z" fill="#d8c09a"/><path d="M20 28l3 1M24 22l3 1M16 34l3 1" stroke="#b39a72" stroke-width="1.4"/><path d="M31 8c2-3 5-4 8-3" stroke="${LF}" stroke-width="2.5" stroke-linecap="round"/>`,
+cabbage:c=>`<circle cx="24" cy="26" r="16" fill="${c}"/><path d="M24 10c-6 6-6 26 0 32M14 15c6 6 8 16 10 27M34 15c-6 6-8 16-10 27" stroke="#fff" stroke-width="1.6" opacity=".35" fill="none"/>`,
+cauli:()=>`<path d="M8 30c4-6 10-6 16-2 6-4 12-4 16 2-4 10-28 10-32 0z" fill="#7cc06a"/><g fill="#f7f1df" stroke="#e6dcc0" stroke-width="1"><circle cx="17" cy="22" r="7"/><circle cx="31" cy="22" r="7"/><circle cx="24" cy="16" r="7"/><circle cx="24" cy="26" r="7"/></g>`,
+broccoli:()=>`<path d="M21 28v14h6V28" fill="#8cc06a"/><g fill="#3f8a3a"><circle cx="15" cy="22" r="8"/><circle cx="33" cy="22" r="8"/><circle cx="24" cy="15" r="9"/><circle cx="24" cy="25" r="7"/></g><g fill="#5aa84a"><circle cx="20" cy="13" r="2.5"/><circle cx="30" cy="18" r="2.5"/><circle cx="14" cy="20" r="2"/></g>`,
+butternut:()=>`<path d="M24 6c-5 0-7 4-7 10 0 4-6 8-6 16 0 7 6 11 13 11s13-4 13-11c0-8-6-12-6-16 0-6-2-10-7-10z" fill="#ecc184"/><circle cx="24" cy="33" r="5" fill="#e3ad62" opacity=".6"/><path d="M24 6V2" stroke="#7a5a32" stroke-width="3" stroke-linecap="round"/>`,
+pumpkin:c=>`<ellipse cx="24" cy="28" rx="18" ry="14" fill="${c}"/><path d="M16 15q-6 13 0 26M24 14v28M32 15q6 13 0 26" stroke="#000" stroke-width="1.4" opacity=".15" fill="none"/><path d="M24 15c0-4 1-7 4-8" stroke="#6b4b2a" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+potato:c=>`<path d="M10 26c0-9 7-15 16-14 8 1 13 6 12 14-1 9-8 13-16 12-8 0-12-5-12-12z" fill="${c}"/><g fill="#000" opacity=".15"><circle cx="18" cy="22" r="1.2"/><circle cx="28" cy="20" r="1.2"/><circle cx="23" cy="30" r="1.2"/><circle cx="32" cy="29" r="1.2"/></g>`,
+babypot:()=>`<ellipse cx="15" cy="26" rx="7" ry="6" fill="#dcb680"/><ellipse cx="32" cy="24" rx="7" ry="6" fill="#d4ab72"/><ellipse cx="24" cy="35" rx="7" ry="6" fill="#e0bc88"/><g fill="#000" opacity=".15"><circle cx="13" cy="25" r="1"/><circle cx="33" cy="23" r="1"/><circle cx="25" cy="35" r="1"/></g>`,
+corn:c=>`<g transform="rotate(-30 24 24)"><path d="M24 4c-6 0-8 8-8 18s3 20 8 22c5-2 8-12 8-22S30 4 24 4z" fill="${c}"/><g stroke="#000" stroke-width=".8" opacity=".15"><path d="M17 12h14M16 18h16M16 24h16M17 30h14M18 36h12M24 5v38M20 6v36M28 6v36"/></g><path d="M16 22c-4 6-4 14 2 22 2-8 3-14 6-18M32 22c4 6 4 14-2 22-2-8-3-14-6-18" fill="${LF}"/></g>`,
+asp:c=>`<g stroke-linecap="round"><path d="M15 44l4-32M24 44V9M33 44l-4-30" stroke="${c}" stroke-width="5"/><path d="M19 12l-2-4M24 9V4M29 14l2-4" stroke="${c}" stroke-width="4"/></g><path d="M12 32h24" stroke="#c9a06a" stroke-width="3" stroke-linecap="round"/>`,
+artichoke:()=>`<path d="M24 40c-10 0-14-8-14-14 4 2 8 2 14-2 6 4 10 4 14 2 0 6-4 14-14 14z" fill="#6f9a52"/><path d="M24 30c-8 0-12-6-12-12 4 2 8 2 12-2 4 4 8 4 12 2 0 6-4 12-12 12z" fill="#86b061"/><path d="M24 20c-5 0-8-4-8-9 3 1 5 1 8-2 3 3 5 3 8 2 0 5-3 9-8 9z" fill="#9cc274"/><path d="M24 40v6" stroke="#6f9a52" stroke-width="3" stroke-linecap="round"/>`,
+jart:()=>`<path d="M12 22c0-6 5-9 10-8 2-4 8-5 11-1 4 1 6 5 4 9 3 4 1 10-4 11-2 4-8 5-11 2-5 1-10-3-9-8-3-1-3-4-1-5z" fill="#c9a27a"/><g fill="#000" opacity=".15"><circle cx="20" cy="22" r="1.2"/><circle cx="28" cy="20" r="1.2"/><circle cx="25" cy="30" r="1.2"/></g>`,
+sweetpot:()=>`<path d="M8 30c2-10 14-18 26-16 6 1 8 5 5 9-6 8-16 14-26 13-4 0-6-3-5-6z" fill="#b8574a"/><path d="M14 30c6-1 14-6 20-12" stroke="#fff" stroke-width="1.6" opacity=".25" fill="none"/><path d="M38 20l5-3M8 33l-4 2" stroke="#8e3f35" stroke-width="2" stroke-linecap="round"/>`,
+avocado:()=>`<path d="M24 5c-7 0-10 10-12 17-3 9 2 17 12 17s15-8 12-17C34 15 31 5 24 5z" fill="#3f7d34"/><path d="M24 10c-5 0-7 8-9 13-2 7 2 11 9 11s11-4 9-11c-2-5-4-13-9-13z" fill="#c9e58a"/><circle cx="24" cy="25" r="5.5" fill="#8a5a32"/><circle cx="22.5" cy="23.5" r="1.5" fill="#fff" opacity=".35"/>`,
+leek:()=>`<g transform="rotate(-30 24 24)"><rect x="20" y="22" width="8" height="22" rx="4" fill="#f2f0e2"/><path d="M20 24c-4-8-6-14-5-20 3 4 5 9 7 16M28 24c4-8 6-14 5-20-3 4-5 9-7 16M22 22V2h4v20" fill="#5aa84a"/><path d="M20 44l-1 3M24 44v3M28 44l1 3" stroke="#c9b98a" stroke-width="1.2"/></g>`,
+fennel:()=>`<path d="M12 40c-2-10 4-18 12-18s14 8 12 18z" fill="#eef3df"/><path d="M18 24c-1-6-1-10 0-14M24 22V8M30 24c1-6 1-10 0-14" stroke="#9cc274" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14 8c2 2 4 2 6 0M20 4c2 2 6 2 8 0M28 8c2 2 4 2 6 0" stroke="#7cc06a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M18 40c0-6 2-12 6-16M30 40c0-6-2-12-6-16" stroke="#d6dfc0" stroke-width="1.4" fill="none"/>`
+};
+const ARTC={};
+const ART=k=>{if(!k)return '';if(ARTC[k])return ARTC[k];const[f,...a]=k.split('|');return ARTC[k]=A[f]?A[f](...a):''};
+const G2='#3f9a55',SH='<ellipse cx="17" cy="20" rx="3.5" ry="2.5" fill="#fff" opacity=".35"/>';
+const leafP=(x,y,r,c,s=1)=>`<path transform="translate(${x} ${y}) rotate(${r}) scale(${s})" d="M0 0c3-4 9-5 13-3-2 4-8 6-13 3z" fill="${c}"/>`;
+const sprig=(c,kind)=>{let h=`<path d="M24 44V8" stroke="${G2}" stroke-width="1.8" fill="none"/>`;const ys=[34,27,20,13];
+ ys.forEach((y,i)=>{const s=kind==='big'?1.25:kind==='small'?.55:kind==='mid'?.9:.8;
+  if(kind==='needle'){h+=`<path d="M24 ${y}l-9-3M24 ${y}l9-3M24 ${y+3}l-9-3M24 ${y+3}l9-3" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/>`}
+  else{h+=leafP(24,y,-150,c,s)+leafP(24,y,-30,c,s)}});
+ if(kind==='small'){h+=`<g fill="${c}">${[[18,10],[30,10],[16,18],[32,18],[17,26],[31,26]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6"/>`).join('')}</g>`}
+ return h+`<path d="M24 8c-3-1-4-3-4-5 3 0 5 2 4 5zM24 8c3-1 4-3 4-5-3 0-5 2-4 5z" fill="${c}"/>`};
+const A2={
+watermelon:()=>`<circle cx="24" cy="25" r="17" fill="#3d8b3d"/><path d="M14 12q-5 13 0 26M24 8v34M34 12q5 13 0 26" stroke="#2a6a2c" stroke-width="3" fill="none"/>${SH}`,
+melonslice:()=>`<path d="M6 20a18 18 0 0 0 36 0z" fill="#3d8b3d"/><path d="M9 20a15 15 0 0 0 30 0z" fill="#ff5a6a"/><g fill="#2a2a2a">${[[16,25],[24,29],[32,25],[20,32],[28,32]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="1" ry="1.6"/>`).join('')}</g>`,
+pear:c=>`<path d="M24 10c-4 0-5 5-5 9 0 3-7 6-7 14 0 7 6 11 12 11s12-4 12-11c0-8-7-11-7-14 0-4-1-9-5-9z" fill="${c}"/><path d="M24 10c0-3 1-5 3-6" stroke="#7a5236" stroke-width="2" fill="none"/>${leafP(26,7,-20,LF,.8)}<ellipse cx="19" cy="30" rx="2.5" ry="4" fill="#fff" opacity=".3"/>`,
+annona:()=>`<path d="M24 42c-10-4-15-12-14-20 1-7 7-11 14-8 7-3 13 1 14 8 1 8-4 16-14 20z" fill="#9cc274"/><g stroke="#6f9a52" stroke-width="1.2" fill="none">${[[18,20],[24,18],[30,20],[16,27],[22,26],[28,26],[33,27],[19,33],[25,33],[30,33],[24,38]].map(([x,y])=>`<path d="M${x-3} ${y}q3-3 6 0"/>`).join('')}</g>`,
+persimmon:c=>`<path d="M8 27c0-9 7-14 16-14s16 5 16 14-7 14-16 14S8 36 8 27z" fill="${c}"/>${SH}<path d="M24 15l-7-3 5-2 2-4 2 4 5 2z" fill="#5a8a3a"/><path d="M24 10V6" stroke="#5a4a2a" stroke-width="2"/>`,
+peach:(c,flat)=>flat?`<ellipse cx="24" cy="27" rx="17" ry="11" fill="${c}"/><ellipse cx="24" cy="25" rx="4" ry="2.5" fill="#d9a05a"/><path d="M14 22q10 6 20 0" stroke="#fff" stroke-width="1.4" opacity=".3" fill="none"/>${leafP(26,14,-20,LF,.9)}`:`<circle cx="24" cy="27" r="15" fill="${c}"/><path d="M24 12q-6 15 0 30" stroke="#d9584a" stroke-width="1.6" fill="none" opacity=".5"/>${SH}${leafP(25,12,-20,LF,.9)}`,
+banana:()=>`<path d="M12 12c-2 14 6 26 22 28 3 0 3-3 1-4-12-3-17-12-16-24z" fill="#f5d03b"/><path d="M18 10c0 14 8 22 20 24 3 0 3-3 1-4-10-3-14-10-14-20z" fill="#f7da55"/><path d="M24 9c2 12 8 18 17 19 2 0 2-3 0-4-8-2-11-8-12-15z" fill="#f9e27a"/><path d="M12 12l1-4M18 10v-4M24 9l1-4" stroke="#6b5a2a" stroke-width="2.4" stroke-linecap="round"/>`,
+cherries:c=>`<path d="M16 32c2-12 6-20 12-24M32 31c-1-10-2-17-4-23" stroke="#6b8f3a" stroke-width="2" fill="none"/>${leafP(28,8,-10,LF,1)}<circle cx="15" cy="34" r="8" fill="${c}"/><circle cx="33" cy="33" r="8" fill="${c}"/><circle cx="12" cy="31" r="2" fill="#fff" opacity=".45"/><circle cx="30" cy="30" r="2" fill="#fff" opacity=".45"/>`,
+quince:()=>`<path d="M24 9c-6 0-8 5-9 9-5 3-6 9-5 14 1 7 7 10 14 10s13-3 14-10c1-5 0-11-5-14-1-4-3-9-9-9z" fill="#e8cf4a"/><path d="M24 9V5" stroke="#7a5236" stroke-width="2"/>${leafP(25,7,-15,LF,.8)}${SH}`,
+guava:()=>`<ellipse cx="24" cy="27" rx="14" ry="16" fill="#9cc65a"/><path d="M24 16a10 11 0 0 1 0 22" fill="#f28a8a"/><path d="M24 16a10 11 0 0 0 0 22" fill="#a9d06a"/><circle cx="27" cy="27" r="1" fill="#fff"/><circle cx="29" cy="31" r="1" fill="#fff"/><circle cx="28" cy="22" r="1" fill="#fff"/>`,
+lychee:()=>`<circle cx="24" cy="27" r="14" fill="#d9434f"/><g fill="#b52e3b">${[[18,21],[24,19],[30,21],[17,28],[23,26],[29,27],[33,30],[20,34],[26,34]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6"/>`).join('')}</g><path d="M24 13V8" stroke="#7a5236" stroke-width="2"/>`,
+cantaloupe:()=>`<circle cx="24" cy="26" r="17" fill="#e7c48a"/><path d="M10 20l28 12M10 30l26-14M14 38l20-28M18 10l18 26" stroke="#c9a36a" stroke-width="1.2" opacity=".8"/>${SH}`,
+spmelon:()=>`<ellipse cx="24" cy="26" rx="19" ry="13" fill="#f2d14a"/><path d="M8 22q16 4 32 0M8 30q16 4 32 0" stroke="#d9b52f" stroke-width="1.5" fill="none"/>${SH}`,
+apricot:()=>`<circle cx="24" cy="28" r="13" fill="#f6a23e"/><path d="M24 15q-5 13 0 26" stroke="#d9802a" stroke-width="1.4" fill="none" opacity=".6"/>${SH}${leafP(25,15,-25,LF,.8)}`,
+mango:()=>`<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f05a3a"/><stop offset=".5" stop-color="#f7b23a"/><stop offset="1" stop-color="#7cbf45"/></linearGradient></defs><path d="M14 12c10-4 24 4 24 18 0 9-8 13-16 11C12 39 6 20 14 12z" fill="url(#mg)"/><path d="M16 12c-1-3 0-5 2-6" stroke="#5a4a2a" stroke-width="2"/>`,
+nectarine:()=>`<circle cx="24" cy="27" r="15" fill="#e6474a"/><path d="M30 18a12 12 0 0 1 6 14" stroke="#f7b23a" stroke-width="5" fill="none" opacity=".8"/><path d="M24 12q-6 15 0 30" stroke="#b52e3b" stroke-width="1.4" fill="none" opacity=".5"/>${SH}`,
+grapes:c=>`<path d="M24 10V4" stroke="#7a5236" stroke-width="2"/>${leafP(25,7,-10,LF,1)}<g fill="${c}">${[[17,14],[24,14],[31,14],[14,21],[21,21],[28,21],[34,21],[17,28],[24,28],[31,28],[20,35],[28,35],[24,41]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.2"/>`).join('')}</g><g fill="#fff" opacity=".35">${[[16,13],[23,20],[30,27]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.2"/>`).join('')}</g>`,
+passion:()=>`<circle cx="24" cy="26" r="16" fill="#6b3a6e"/><g fill="#8a5a8e">${[[17,20],[29,19],[22,30],[32,30],[16,32]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.5"/>`).join('')}</g><path d="M24 10V6" stroke="#5a4a2a" stroke-width="2"/>${SH}`,
+papaya:()=>`<path d="M24 6c-8 0-12 8-12 18s5 18 12 18 12-8 12-18S32 6 24 6z" fill="#8fbf4a"/><path d="M24 10c-6 0-9 7-9 15 0 7 4 14 9 14V10z" fill="#f59a3c"/><path d="M24 10c6 0 9 7 9 15 0 7-4 14-9 14V10z" fill="#f7a84a"/><g fill="#2a2a2a"><circle cx="22" cy="22" r="1.4"/><circle cx="26" cy="25" r="1.4"/><circle cx="23" cy="28" r="1.4"/><circle cx="26" cy="31" r="1.4"/></g>`,
+kiwi:c=>`<ellipse cx="17" cy="24" rx="11" ry="13" fill="#9a7a4a"/><circle cx="30" cy="28" r="12" fill="#8a6a3a"/><circle cx="30" cy="28" r="10.5" fill="${c}"/><circle cx="30" cy="28" r="3.5" fill="#f7f3d8"/><g fill="#2a2a2a">${Array.from({length:10},(_,i)=>{const a=i/10*6.28;return `<ellipse cx="${30+Math.cos(a)*6}" cy="${28+Math.sin(a)*6}" rx=".8" ry="1.3" transform="rotate(${i*36} ${30+Math.cos(a)*6} ${28+Math.sin(a)*6})"/>`}).join('')}</g>`,
+starfruit:()=>`<path d="M24 6l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="#f2d14a" stroke="#d9b52f" stroke-width="1.4" stroke-linejoin="round"/><path d="M24 14v12l-8 4M24 26l8 4M24 26l9-5M24 26l-9-5" stroke="#d9b52f" stroke-width="1" fill="none"/>`,
+dragon:()=>`<ellipse cx="24" cy="27" rx="14" ry="16" fill="#e23b7a"/><g fill="#7cbf45">${[[12,22,-40],[36,22,220],[14,33,-20],[34,33,200],[24,12,-90]].map(([x,y,r])=>leafP(x,y,r,'#7cbf45',.8)).join('')}</g><path d="M18 18q-2 6 0 12M30 18q2 6 0 12" stroke="#c22a66" stroke-width="1.4" fill="none"/>`,
+plum:c=>`<ellipse cx="24" cy="27" rx="13" ry="15" fill="${c}"/><path d="M24 12q-5 15 0 30" stroke="#000" stroke-width="1.2" fill="none" opacity=".15"/>${SH}<path d="M24 12V7" stroke="#7a5236" stroke-width="2"/>`,
+loquat:()=>`<path d="M24 12V6" stroke="#7a5236" stroke-width="2"/>${leafP(24,8,-30,LF,1.1)}<ellipse cx="17" cy="24" rx="7" ry="8" fill="#f5a83a"/><ellipse cx="31" cy="24" rx="7" ry="8" fill="#f7b44a"/><ellipse cx="24" cy="35" rx="7" ry="8" fill="#f29a2e"/>`,
+almond:()=>`<path d="M14 36c-6-10 0-24 8-26 4 6 4 18-8 26z" fill="#9cc274"/><path d="M26 38c-4-11 3-23 11-24 3 7 1 18-11 24z" fill="#a9cf7f"/><path d="M15 34c2-8 4-14 7-22M27 36c2-8 5-14 9-21" stroke="#7aa65a" stroke-width="1.2" fill="none"/>`,
+fig:()=>`<path d="M24 8c-3 0-4 4-6 8-5 4-9 9-9 15 0 7 7 11 15 11s15-4 15-11c0-6-4-11-9-15-2-4-3-8-6-8z" fill="#6b3a6e"/><path d="M24 8V4" stroke="#5a8a3a" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="18" cy="28" rx="2.5" ry="5" fill="#fff" opacity=".25"/>`,
+strawberry:()=>`<path d="M24 42c-10-4-15-13-14-20 1-6 7-8 14-6 7-2 13 0 14 6 1 7-4 16-14 20z" fill="#e8384a"/><g fill="#ffe08a">${[[18,22],[24,21],[30,22],[16,28],[22,27],[28,27],[33,28],[19,33],[25,33],[29,34],[24,38]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx=".9" ry="1.3"/>`).join('')}</g><path d="M24 16l-8-3 4-3 4 1 4-1 4 3z" fill="#4caf6a"/>`,
+dates:()=>`<path d="M24 6c-4 6-10 8-14 10M24 6c4 6 10 8 14 10M24 6v12" stroke="#a87f4c" stroke-width="1.6" fill="none"/><g fill="#f2c94c">${[[12,22],[20,24],[28,24],[36,22],[16,32],[24,33],[32,32],[20,41],[28,41]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="3.5" ry="5"/>`).join('')}</g>`,
+pineapple:()=>`<path d="M24 16c-3-5-8-8-12-8 3 4 6 7 9 9zM24 16c3-5 8-8 12-8-3 4-6 7-9 9zM24 16V4" stroke="${G2}" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="24" cy="30" rx="11" ry="14" fill="#e8a83a"/><path d="M15 22l18 16M33 22L15 38M14 30l12 12M34 30L22 42M18 18l16 14M30 18L14 32" stroke="#c9862a" stroke-width="1.2" opacity=".8"/>`,
+sabra:()=>`<path d="M24 8c-8 0-12 8-12 18s5 16 12 16 12-6 12-16S32 8 24 8z" fill="#f29a3a"/><path d="M24 8c-6 0-9 6-9 12" stroke="#7cbf45" stroke-width="5" fill="none" opacity=".7"/><g fill="#6b4a2a">${[[18,18],[28,16],[20,28],[30,26],[24,36],[16,34]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.2"/>`).join('')}</g>`,
+pomegranate:()=>`<circle cx="24" cy="28" r="15" fill="#c8303f"/><path d="M19 14l2-6 3 4 3-4 2 6z" fill="#a8262f"/>${SH}`,
+pomseeds:()=>`<path d="M8 26h32c0 9-7 15-16 15S8 35 8 26z" fill="#f1ece4" stroke="#ddd3c3" stroke-width="1.2"/><g fill="#d9304a">${[[14,24],[19,22],[24,23],[29,22],[34,24],[17,19],[22,18],[27,18],[31,19],[24,14]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3"/>`).join('')}</g>`,
+blueberry:()=>`<g fill="#3d4f8a">${[[16,20],[30,19],[23,28],[14,33],[32,33],[24,38]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="7"/>`).join('')}</g><g fill="#2a3666">${[[16,20],[30,19],[23,28],[14,33],[32,33],[24,38]].map(([x,y])=>`<path d="M${x-2} ${y-3}l2 2 2-2" stroke="#1d2752" stroke-width="1" fill="none"/>`).join('')}</g>`,
+berry:c=>`<g fill="${c}">${[[24,14],[18,19],[30,19],[15,26],[24,24],[33,26],[18,32],[30,32],[24,38]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.8"/>`).join('')}</g><g fill="#fff" opacity=".3">${[[23,13],[17,18],[29,18],[23,23]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.2"/>`).join('')}</g><path d="M20 10l4-4 4 4" stroke="${G2}" stroke-width="2.4" fill="none"/>`,
+citrus:(c,flesh,big)=>{const r=big?17:14;return `<circle cx="24" cy="26" r="${r}" fill="${c}"/>${flesh?`<circle cx="30" cy="30" r="${r*.55}" fill="#fff"/><circle cx="30" cy="30" r="${r*.48}" fill="${flesh}"/><path d="M30 ${30-r*.48}v${r*.96}M${30-r*.48} 30h${r*.96}" stroke="#fff" stroke-width="1"/>`:''}<circle cx="18" cy="20" r="3" fill="#fff" opacity=".35"/>${leafP(25,26-r,-25,LF,.9)}`},
+juice:()=>`<circle cx="17" cy="28" r="11" fill="#f59a3c"/><circle cx="14" cy="24" r="2.4" fill="#fff" opacity=".35"/><path d="M28 14h12l-2 28h-8z" fill="#ffd38a" stroke="#e8c070" stroke-width="1.2"/><path d="M29 20h10l-1.5 21h-7z" fill="#f7a33c"/>`,
+pomelopeel:()=>`<g fill="#f6efc0" stroke="#e5dca0" stroke-width="1.2">${[0,60,120,180,240,300].map(a=>`<path transform="rotate(${a} 24 26)" d="M24 26L18 10c4-2 8-2 12 0z"/>`).join('')}</g>`,
+appleC:(c,c2)=>`<path d="M24 15c-5-4-15-2-15 10 0 10 7 17 15 15 8 2 15-5 15-15 0-12-10-14-15-10z" fill="${c}"/>${c2?`<path d="M28 16c6 0 10 5 10 11" stroke="${c2}" stroke-width="6" fill="none" opacity=".7" stroke-linecap="round"/>`:''}<path d="M24 15c0-4 1-7 4-9" stroke="#7a5236" stroke-width="2" fill="none"/>${leafP(27,9,-20,LF,1)}<ellipse cx="16" cy="23" rx="2.5" ry="4" fill="#fff" opacity=".35"/>`,
+peapod:()=>`<path d="M6 30c8-14 24-20 36-18-4 12-20 22-36 18z" fill="#7cc06a"/><path d="M8 29c8-6 20-12 32-15" stroke="#5aa84a" stroke-width="1.4" fill="none"/><g fill="#a9dd8f">${[[14,26],[20,23],[26,20],[32,18]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3"/>`).join('')}</g>`,
+snowpea:()=>`<path d="M6 30c8-12 24-18 36-17-3 9-20 19-36 17z" fill="#9fd27a"/><path d="M8 29c10-5 22-11 32-14" stroke="#7cc06a" stroke-width="1.2" fill="none"/><path d="M42 13c2-2 3-4 2-6" stroke="${G2}" stroke-width="1.6" fill="none"/>`,
+okra:()=>`<path d="M30 8c4 2 4 6 2 8L12 40c-2 2-5 0-4-2l16-26c2-3 4-5 6-4z" fill="#6fb04a"/><path d="M28 12L12 38" stroke="#4e8a34" stroke-width="1.2"/><path d="M30 8c1-2 3-3 5-3" stroke="${G2}" stroke-width="2.4" stroke-linecap="round"/>`,
+beans:(c,thick,wet)=>`<g stroke="${c}" stroke-width="${thick?4.5:3}" fill="none" stroke-linecap="round"><path d="M10 40c4-12 10-24 18-32"/><path d="M16 42c4-12 10-22 20-30"/><path d="M22 42c4-10 9-18 18-24"/></g>${wet?'<g fill="#7fc4e8">'+[[12,16],[36,34],[30,40]].map(([x,y])=>`<path d="M${x} ${y-4}c2 3 3 4 3 5a3 3 0 0 1-6 0c0-1 1-2 3-5z"/>`).join('')+'</g>':''}`,
+longbean:()=>`<g stroke="#5aa84a" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M10 8c18 6 4 18 22 22s0 14 8 12"/><path d="M14 6c16 8 2 18 20 22s2 12 8 10"/></g>`,
+herb:(c,kind)=>sprig(c,kind),
+curly:c=>`<path d="M24 44V22M24 30l-8-8M24 28l8-9" stroke="${G2}" stroke-width="1.8" fill="none"/><g fill="${c}">${[[14,18],[22,12],[30,14],[34,22],[16,26],[26,20],[20,8],[28,7]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5"/>`).join('')}</g>`,
+dill:()=>`<path d="M24 44V10" stroke="${G2}" stroke-width="1.6"/><g stroke="#6cc07f" stroke-width="1.2" fill="none">${[12,18,24,30].map(y=>`<path d="M24 ${y}c-4-4-10-5-14-4M24 ${y}c4-4 10-5 14-4M17 ${y-2}l-2-4M31 ${y-2}l2-4"/>`).join('')}</g>`,
+grass:(c,w)=>`<g stroke="${c}" stroke-width="${w||2.4}" stroke-linecap="round" fill="none"><path d="M18 44C17 30 14 18 10 8"/><path d="M22 44c0-14 0-26 1-38"/><path d="M26 44c1-14 3-26 8-36"/><path d="M30 44c2-10 6-18 12-26"/></g><path d="M16 38h18" stroke="#c9a06a" stroke-width="3" stroke-linecap="round"/>`,
+greenonion:()=>`<g stroke="#5aa84a" stroke-width="3" stroke-linecap="round"><path d="M18 26L12 6M24 26V4M30 26l6-20"/></g><path d="M15 26h18l-2 12c-1 4-13 4-14 0z" fill="#f4f1e2"/><path d="M20 40l-1 4M24 40v4M28 40l1 4" stroke="#c9b98a" stroke-width="1.2"/>`,
+lemongrass:()=>`<g stroke-linecap="round"><path d="M18 44V14M24 44V8M30 44V12" stroke="#d9dfa8" stroke-width="4"/><path d="M18 14l-4-8M24 8V2M30 12l4-8" stroke="#9cc274" stroke-width="3"/></g>`,
+celery:(n)=>{const h=n==='short'?20:n==='head'?16:30;return `<g stroke-linecap="round">${[16,21,26,31].map((x,i)=>`<path d="M${x} 44V${44-h+i%2*2}" stroke="#a9d27a" stroke-width="4"/>`).join('')}</g>`+[14,22,30,36].map((x,i)=>leafP(x-2,44-h-2,-60-i*20,'#6cc07f',1)).join('')+(n==='head'?'<ellipse cx="24" cy="40" rx="11" ry="5" fill="#e9eecf"/>':'')},
+proot:()=>`<path d="M24 12c-4 0-6 4-5 10 1 7 3 14 5 20 2-6 4-13 5-20 1-6-1-10-5-10z" fill="#f2ead2"/><path d="M24 12c-2-4-6-7-10-7 1 4 5 6 10 7zM24 12c2-4 6-7 10-7-1 4-5 6-10 7z" fill="${LF}"/><path d="M21 22l3 1M22 30l3 1" stroke="#d9cfb0" stroke-width="1.2"/>`,
+bokchoy:()=>`<path d="M18 44c-4-8-4-20 0-28M30 44c4-8 4-20 0-28M24 44V16" stroke="#e8f2d8" stroke-width="5" stroke-linecap="round"/><path d="M18 18c-8-2-10-10-6-14 6 0 8 6 6 14zM30 18c8-2 10-10 6-14-6 0-8 6-6 14zM24 16c-4-6-4-12 0-14 4 2 4 8 0 14z" fill="#4e9a3e"/>`,
+kale:()=>`<path d="M24 44V20" stroke="#6b9a5a" stroke-width="2.4"/><path d="M24 22c-10 2-16-6-14-14 2 2 4 1 5-1 2 2 4 2 5 0 2 2 3 2 4 0 2 2 4 2 5 0 1 2 3 3 5 1 2 8-4 16-10 14z" fill="#3f7a4a"/><path d="M24 22V8" stroke="#2f5a3a" stroke-width="1.2"/>`,
+chard:()=>`<path d="M24 44V18" stroke="#d9304a" stroke-width="3" stroke-linecap="round"/><path d="M24 20c-12 0-14-12-8-16 4-2 6 0 8 2 2-2 4-4 8-2 6 4 4 16-8 16z" fill="#3f8a3a"/><path d="M24 20V6M24 14l-6-4M24 14l6-4" stroke="#d9304a" stroke-width="1.2" fill="none"/>`,
+endive:()=>`<path d="M24 6c-6 4-9 14-8 24 1 7 4 12 8 12s7-5 8-12c1-10-2-20-8-24z" fill="#f1f0cf"/><path d="M24 6c-3 3-5 8-5 14M24 6c3 3 5 8 5 14" stroke="#d6e08a" stroke-width="2" fill="none"/><path d="M20 8c2-2 6-2 8 0" stroke="#c9d870" stroke-width="3" fill="none"/>`,
+ginger:()=>`<path d="M8 30c2-6 8-6 12-4 2-6 8-8 12-4 4-2 10 0 9 6 3 4 0 9-5 8-4 4-10 2-12-2-5 2-10 1-12-2-4 0-5-2-4-2z" fill="#d9b27a"/><path d="M14 30h6M26 26l4 2M30 34h5" stroke="#b8925a" stroke-width="1.4" stroke-linecap="round"/>`,
+cress:()=>`<rect x="10" y="32" width="28" height="10" rx="3" fill="#c9a06a"/><g stroke="${G2}" stroke-width="1.2">${[13,16,19,22,25,28,31,34].map((x,i)=>`<path d="M${x} 32v-${10+i%3*3}"/>`).join('')}</g><g fill="#7cc06a">${[13,16,19,22,25,28,31,34].map((x,i)=>`<ellipse cx="${x}" cy="${22-i%3*3}" rx="2.6" ry="1.8"/>`).join('')}</g>`,
+spinach:(c,small)=>`${[[-40,14,30],[0,24,26],[40,34,30]].map(([r,x,y])=>`<path transform="rotate(${r} ${x} ${y})" d="M${x} ${y+12}V${y}c-${small?5:7}-1-${small?8:10}-6-${small?8:10}-12 0-${small?4:6} ${small?4:5}-8 ${small?8:10}-8s${small?8:10} 2 ${small?8:10} 8c0 6-3 11-${small?8:10} 12z" fill="${c}"/>`).join('')}`,
+arugula:()=>`<path d="M24 44V14" stroke="${G2}" stroke-width="1.6"/><path d="M24 14c-3-6 0-10 4-10 2 4 0 8-4 10zM24 22c-6-1-9-4-9-7 4-1 7 2 9 7zM24 22c6-1 9-4 9-7-4-1-7 2-9 7zM24 30c-7-1-11-4-11-8 5-1 9 3 11 8zM24 30c7-1 11-4 11-8-5-1-9 3-11 8z" fill="#5aa84a"/>`,
+lettuce:(c,kind)=>kind==='romaine'?`<path d="M24 44c-8 0-10-12-8-24 1-8 4-14 8-16 4 2 7 8 8 16 2 12 0 24-8 24z" fill="${c}"/><path d="M24 44V8M24 20l-5-4M24 28l-6-4M24 20l5-4M24 28l6-4" stroke="#e8f2d8" stroke-width="1.4" fill="none"/>`:kind==='ice'?`<circle cx="24" cy="26" r="16" fill="${c}"/><path d="M12 22q12-8 24 0M10 30q14-6 28 0" stroke="#fff" stroke-width="1.6" opacity=".5" fill="none"/>`:`<g fill="${c}">${[[14,26,10],[34,26,10],[24,32,12],[24,18,11]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g><path d="M16 24q8 6 16 0M18 32q6 4 12 0" stroke="#fff" stroke-width="1.4" opacity=".45" fill="none"/>`,
+babymix:()=>leafP(8,30,-50,'#3f8a3a',1.4)+leafP(24,36,-100,'#7a3a5e',1.4)+leafP(26,30,-20,'#9fd27a',1.4)+leafP(14,22,-80,'#5aa84a',1.2)+leafP(28,22,-140,'#6cc07f',1.2),
+bag:c=>`<path d="M12 10h24l2 30c0 2-1 3-3 3H13c-2 0-3-1-3-3z" fill="#eef4ea" stroke="#cfdccb" stroke-width="1.5"/><rect x="12" y="10" width="24" height="5" rx="1.5" fill="${c}"/>${leafP(15,32,-40,'#5aa84a',1.1)}${leafP(24,36,-100,'#3f8a3a',1.1)}${leafP(22,28,-10,'#9fd27a',1.1)}`,
+mush:(cap,stem,kind)=>kind==='king'?`<path d="M18 22h12l-1 20c0 2-10 2-10 0z" fill="${stem}"/><ellipse cx="24" cy="20" rx="9" ry="5" fill="${cap}"/>`:kind==='flat'?`<path d="M21 26h6l1 14h-8z" fill="${stem}"/><ellipse cx="24" cy="24" rx="17" ry="7" fill="${cap}"/><ellipse cx="24" cy="22" rx="12" ry="3" fill="#fff" opacity=".15"/>`:kind==='cluster'?[[14,22],[24,16],[34,22]].map(([x,y])=>`<path d="M${x-1.5} ${y+2}h3l1 ${40-y}h-5z" fill="${stem}"/><ellipse cx="${x}" cy="${y}" rx="6" ry="4" fill="${cap}" stroke="#000" stroke-opacity=".12"/>`).join(''):kind==='wild'?`<path d="M14 28h4l1 12h-6z" fill="${stem}"/><path d="M6 28c0-6 5-10 10-10s10 4 10 10z" fill="#a8743f"/><path d="M29 26h5l1 14h-7z" fill="${stem}"/><path d="M22 26c0-7 5-11 9-11s9 4 9 11z" fill="#c99a5a"/>`:`<path d="M19 26h10l1 14c0 2-12 2-12 0z" fill="${stem}"/><path d="M8 27c0-9 7-15 16-15s16 6 16 15z" fill="${cap}"/><ellipse cx="18" cy="19" rx="3" ry="2" fill="#fff" opacity=".4"/>`,
+sprouts:(c,thick)=>`<path d="M8 30h32l-3 12H11z" fill="#eef4ea" stroke="#cfdccb" stroke-width="1.5"/><g stroke="${thick?'#e3d6a8':'#a9cf7f'}" stroke-width="${thick?2.6:1.4}" fill="none">${[12,16,20,24,28,32,36].map((x,i)=>`<path d="M${x} 30c${i%2?2:-2}-6 ${i%2?-1:1}-12 ${i%2?3:-3}-18"/>`).join('')}</g><g fill="${c}">${[12,16,20,24,28,32,36].map((x,i)=>`<ellipse cx="${x+(i%2?3:-3)}" cy="12" rx="${thick?2:2.6}" ry="${thick?2:1.8}"/>`).join('')}</g>`,
+shred:c=>`<path d="M6 26h36c0 9-8 16-18 16S6 35 6 26z" fill="#f1ece4" stroke="#ddd3c3" stroke-width="1.2"/><g stroke="${c}" stroke-width="2" stroke-linecap="round">${[[12,24,18,16],[18,23,24,14],[24,24,30,15],[30,23,34,17],[15,20,22,18],[26,19,32,21]].map(([a,b,c2,d])=>`<path d="M${a} ${b}L${c2} ${d}"/>`).join('')}</g>`,
+lemon:()=>`<ellipse cx="24" cy="26" rx="16" ry="12" fill="#f7d34a"/><ellipse cx="40" cy="26" rx="2.5" ry="2" fill="#f7d34a"/><ellipse cx="18" cy="21" rx="4" ry="2.5" fill="#fff" opacity=".45"/>${leafP(26,14,-30,LF,1)}`,
+babycarrot:()=>`<g fill="#f59a3c">${[[10,30,-30],[18,34,-10],[28,32,15],[34,26,35]].map(([x,y,r])=>`<rect transform="rotate(${r} ${x} ${y})" x="${x-3}" y="${y-12}" width="6" height="18" rx="3"/>`).join('')}</g>`
+};
+Object.assign(A,A2);
+
+
+const blob=p=>IMG[p.id]?`<img class="thumb" src="${IMG[p.id]}" alt="">`:`<span class="blob${p.art?' art':''}" style="background:color-mix(in srgb,${tint(p.c)} var(--tm),var(--bg))">${p.art?`<svg viewBox="0 0 48 48" aria-hidden="true">${ART(p.art)}</svg>`:ico(catIco(p.c))}</span>`;
+const dayKey=()=>{const d=new Date(Date.now()-4*36e5);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+const newExt=()=>({day:dayKey(),items:{},src:{},near:{},bad:[],msgs:[],none:false,snooze:0});
+
+/* ---------- products added for supplier ילת (0.5.2); also merged once into saved data ---------- */
+const ADDP=[["ירקות","תפו\"א לבן למיקרו",[[0,"י"]],false,"","potato|#e6d3a3"],["ירקות","תפו\"א אדום למיקרו",[[0,"י"]],false,"","potato|#b8574a"],["ירקות","גזר צבעוני",[[0,"ח"]],false,"","carrot"],["ירק ועשבי תיבול","פטרוזיליה מהדרין",[[0,"י"]],false,"","curly|#3f9a4a"],["ירק ועשבי תיבול","כוסברה מהדרין",[[0,"י"]],false,"","curly|#6cc07f"],["ירק ועשבי תיבול","שמיר מהדרין",[[0,"י"]],false,"","dill"],["ירק ועשבי תיבול","נענע מהדרין",[[0,"י"]],false,"","herb|#3fb36a|big"],["ירקות","כרוב לבן מהדרין",[[0,"י"]],false,"","cabbage|#dfe9c8"],["ירקות","כרוב סגול מהדרין",[[0,"י"]],false,"","cabbage|#8e3b7e"],["ירק ועשבי תיבול","סלרי מהדרין",[[0,"י"]],false,"","celery|head"],["ירק ועשבי תיבול","בצל ירוק מהדרין",[[0,"י"]],false,"","greenonion"],["ירקות","כרובית מהדרין",[[0,"י"]],false,"","cauli"]];
+SEEDP.push(...ADDP);
+function seed(){const sup=SEED_SUP.map(([n,a],i)=>({id:'s'+i,n,a}));const cats=[];
+ const prods=SEEDP.map(([c,n,ss,hide,note,art],i)=>{if(!cats.includes(c))cats.push(c);return{id:'p'+i,n,c,s:ss.map(([k,p])=>({k:'s'+k,p})),hide,note,art}});
+ return{ver:5,sup,cats,prods,o:{},last:{},pref:{},sent:{},hist:[],alias:{},ext:newExt(),set:{theme:'auto',bk:Date.now()}}}
+let st;
+try{st=JSON.parse(localStorage.getItem(KEY))}catch(e){st=null}
+if(!st||!st.prods||st.ver!==5)st=seed();
+if(st.ver===5){const AM={};SEEDP.forEach(r=>{if(r[5])AM[r[1]]=r[5]});st.prods.forEach(p=>{if(!p.art&&AM[p.n])p.art=AM[p.n]})}
+if(st.ver===5){st.added=st.added||[];const yk=((st.sup.find(s=>s.n==='ילת')||st.sup[0]||{}).id)||'s0';let ch=false;
+ ADDP.forEach(([c,n,ss,hide,note,art])=>{if(st.added.includes(n))return;st.added.push(n);ch=true;if(st.prods.some(p=>p.n===n))return;
+  if(!st.cats.includes(c))st.cats.push(c);const np={id:uid('p'),n,c,s:ss.map(([k,pk])=>({k:k===0?yk:'s'+k,p:pk})),hide,note,art};
+  let at=-1;st.prods.forEach((p,i)=>{if(p.c===c)at=i});st.prods.splice(at<0?st.prods.length:at+1,0,np)});
+ if(!st.added.includes('#pack-ch1')){st.added.push('#pack-ch1');ch=true;const g=st.prods.find(p=>p.n==='גזר צבעוני');if(g)g.s.forEach(x=>{if(x.k===yk&&x.p==='א')x.p='ח'})}
+ if(ch)try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+let PM={};const reindex=()=>{PM={};st.prods.forEach(p=>PM[p.id]=p);VAR=null};
+let VAR=null;
+let saveOk=true;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));saveOk=true}catch(e){saveOk=false;toast('השמירה במכשיר נכשלה')}}
+const supN=k=>(st.sup.find(s=>s.id===k)||{n:'?'}).n;
+const packOf=(p,k)=>(p.s.find(x=>x.k===k)||p.s[0]||{p:'א'}).p;
+reindex();
+
+/* ---------- images (IndexedDB) ---------- */
+const IMG={};let db=null;
+function idbOpen(){return new Promise(res=>{try{const r=indexedDB.open('yerakot',1);r.onupgradeneeded=()=>r.result.createObjectStore('img');r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})}
+function idbAll(){return new Promise(res=>{if(!db)return res();try{const rq=db.transaction('img').objectStore('img').openCursor();rq.onsuccess=()=>{const c=rq.result;if(c){IMG[c.key]=c.value;c.continue()}else res()};rq.onerror=()=>res()}catch(e){res()}})}
+function imgPut(id,d){IMG[id]=d;try{db&&db.transaction('img','readwrite').objectStore('img').put(d,id)}catch(e){}}
+function imgDel(id){delete IMG[id];try{db&&db.transaction('img','readwrite').objectStore('img').delete(id)}catch(e){}}
+function shrink(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const m=240,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.8))};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+
+/* ---------- ui helpers ---------- */
+let lastAct=0;['pointerdown','keydown','input'].forEach(t=>document.addEventListener(t,()=>lastAct=Date.now(),true));
+function undoToast(t,fn){document.querySelectorAll('.toast').forEach(x=>x.remove());const d=document.createElement('div');d.className='toast undo';d.setAttribute('role','status');d.innerHTML=`<span>${esc(t)}</span><button type="button">ביטול</button>`;
+ d.querySelector('button').onclick=()=>{d.remove();fn()};document.body.appendChild(d);setTimeout(()=>d.remove(),6000)}
+function toast(t){document.querySelectorAll('.toast').forEach(x=>x.remove());const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+new ResizeObserver(()=>document.documentElement.style.setProperty('--tabh',$('tabs').offsetHeight+'px')).observe($('tabs'));
+function applyTheme(){const t=st.set.theme;if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.dataset.theme=t}
+applyTheme();
+
+let sheetOn=null;
+function sheet(html,on,opt={}){closeSheet();const w=document.createElement('div');w.className='sheet';
+ w.innerHTML=`<div class="panel" role="dialog" aria-modal="true"><div class="grab"><span></span><button class="close" type="button" data-a="__close">סגירה</button></div><div class="body">${html}</div></div>`;
+ $('sheet').appendChild(w);const panel=w.querySelector('.panel'),until=opt.auto?Date.now()+800:0;
+ w.addEventListener('click',e=>{if(Date.now()<until){e.preventDefault();e.stopPropagation();return}
+  if(e.target===w)return closeSheet();const b=e.target.closest('[data-a]');if(!b)return;if(b.dataset.a==='__close')return closeSheet();on&&on(b.dataset.a,b,e)},true);
+ const g=panel.querySelector('.grab');let y0=null,dy=0;
+ g.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;y0=e.clientY;dy=0;g.setPointerCapture(e.pointerId);panel.style.transition='none'});
+ g.addEventListener('pointermove',e=>{if(y0==null)return;dy=Math.max(0,e.clientY-y0);panel.style.transform=`translateY(${dy}px)`});
+ const up=()=>{if(y0==null)return;y0=null;panel.style.transition='transform .2s';if(dy>90)closeSheet();else panel.style.transform=''};
+ g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);
+ sheetOn={w,opt};const f=panel.querySelector('input:not([type=file]),textarea');if(f&&!opt.auto&&!opt.nofocus)setTimeout(()=>f.focus(),250);
+ return panel.querySelector('.body')}
+function closeSheet(){$('sheet').innerHTML='';const o=sheetOn;sheetOn=null;o&&o.opt.onclose&&o.opt.onclose()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheetOn)closeSheet()});
+function arm(b,label){if(b.dataset.armed){return true}b.dataset.armed='1';b.dataset.orig=b.textContent;b.textContent=label;b.classList.add('arm');setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent=b.dataset.orig;b.classList.remove('arm')}},3500);return false}
+
+/* ---------- tolerant matching ---------- */
+const FIN={'ם':'מ','ן':'נ','ץ':'צ','ף':'פ','ך':'כ'};
+const SYN=[[/תפוחי? אדמה|תפודים|תפוד/g,'תפו"א']];
+function sk(w){w=w.replace(/[֑-ׇ"'״׳`]/g,'').replace(/[םןץףך]/g,c=>FIN[c]);if(w.length>3)w=w.replace(/(יות|ימ|ות|ה)$/,'');return w?w[0]+w.slice(1).replace(/[ויא]/g,''):''}
+const toks=s=>s.split(/[\s\-\/]+/).map(sk).filter(Boolean);
+function lev(a,b){if(Math.abs(a.length-b.length)>1)return 9;const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return d[b.length]}
+function vars(){if(!VAR)VAR=st.prods.map(p=>{const m=p.n.match(/^(.*?)\s*\((.*)\)\s*$/);return{id:p.id,v:(m?[m[1],m[2]]:[p.n]).map(toks)}});return VAR}
+function tokM(pt,lt){if(pt===lt)return 1;if((lt[0]==='ו'||lt[0]==='ה')&&lt.length>3&&lt.slice(1)===pt)return 1;if(Math.min(pt.length,lt.length)>=4&&lev(pt,lt)<=1)return .8;return 0}
+function rank(clean){const L=toks(clean),out=[];
+ vars().forEach(({id,v})=>{let best=null;v.forEach(V=>{let sc=0,n=0;const used=new Set();
+  V.forEach(pt=>{let bv=0,bj=-1;L.forEach((lt,j)=>{if(used.has(j))return;const x=tokM(pt,lt);if(x>bv){bv=x;bj=j}});if(bj>=0){used.add(bj);sc+=bv;n++}});
+  if(n){const r={id,n,full:n===V.length,sc,len:V.length,exact:sc===n};if(!best||(r.full&&!best.full)||(r.full===best.full&&(r.n>best.n||(r.n===best.n&&r.sc>best.sc))))best=r}});if(best)out.push(best)});
+ out.sort((a,b)=>(b.full-a.full)||(b.n-a.n)||(b.sc-a.sc)||(a.len-b.len));return out}
+function matchLine(clean){const R=rank(clean),F=R.filter(r=>r.full).sort((a,b)=>(b.n-a.n)||(b.sc-a.sc)),top=F[0],cands=R.slice(0,4).map(r=>r.id);
+ if(!top){const Lc=toks(clean).length,S=R.filter(r=>r.n===Lc);return S.length===1?{id:S[0].id,near:true,cands}:{cands}}
+ const tie=F[1]&&F[1].n===top.n&&F[1].sc===top.sc,big=R.filter(r=>!r.full&&r.n>top.n);
+ if(tie||big.length)return{cands:[...new Set([top.id,...F.slice(1,3).map(r=>r.id),...big.slice(0,3).map(r=>r.id)])].slice(0,4)};
+ return{id:top.id,near:!top.exact,cands}}
+function parse(text){const res=[],bad=[];
+ text.split(/\n+/).map(l=>l.trim()).filter(Boolean).forEach(line=>{
+  const nm=line.match(/\d+(?:[.,]\d+)?/);const q=nm?parseFloat(nm[0].replace(',','.')):1;
+  let p=null;if(/ארגז|ארג'|קרטון/.test(line))p='א';else if(/חביל/.test(line))p='ח';else if(/יחיד|יח'|(^|\s)יח(\s|$)/.test(line))p='י';
+  let clean=line.replace(/\d+(?:[.,]\d+)?/g,' ').replace(/ארגזים|ארגז|ארג'|קרטונים|קרטון|חבילות|חבילה|יחידות|יחידה|יח'/g,' ').replace(/(^|\s)יח(?=\s|$)/g,' ').replace(/[–:*•×,]/g,' ').replace(/(^|\s)[-x](?=\s|$)/g,' ').replace(/\s+/g,' ').trim();
+  SYN.forEach(([r,t])=>clean=clean.replace(r,t));
+  const a=st.alias[clean];
+  if(a&&PM[a]){res.push({id:a,q,p:p||packOf(PM[a]),op:p,line,clean});return}
+  const m=matchLine(clean);
+  if(m.id==null){if(!nm&&!m.cands.length)return;bad.push({line,clean,q,p,c:m.cands})}
+  else res.push({id:m.id,q,p:p||packOf(PM[m.id]),op:p,line,clean,near:m.near})});
+ return{res,bad}}
+
+/* ---------- external supplier ---------- */
+function checkDay(){if(st.ext.day!==dayKey()){st.ext=newExt();save();return true}return false}
+const extQty=id=>{const m=st.ext.items[id];return m?Object.entries(m).map(([p,q])=>q+' '+pk(p,q)).join(' + '):''};
+function addItem(id,p,q){const m=st.ext.items[id]||(st.ext.items[id]={});m[p]=(m[p]||0)+q}
+function addExt(text){if(!text.trim())return;const{res,bad}=parse(text),e=st.ext;e.msgs.push({t:text.trim(),time:Date.now()});e.none=false;
+ res.forEach(r=>{addItem(r.id,r.p,r.q);(e.src[r.id]||(e.src[r.id]=[])).push({line:r.line,clean:r.clean,q:r.q,p:r.op});if(r.near)e.near[r.id]=1});
+ e.bad.push(...bad);save();badges()}
+function assign(n,id){const e=st.ext,b=e.bad[n];if(!b)return;if(b.clean)st.alias[b.clean]=id;addItem(id,b.p||packOf(PM[id]),b.q);(e.src[id]||(e.src[id]=[])).push({line:b.line,clean:b.clean,q:b.q,p:b.p});delete e.near[id];e.bad.splice(n,1);save()}
+function wrong(id){const e=st.ext,s=e.src[id]||[];delete e.items[id];delete e.src[id];delete e.near[id];
+ s.forEach(b=>{if(st.alias[b.clean]===id)delete st.alias[b.clean];e.bad.push({...b,c:rank(b.clean).map(r=>r.id).filter(x=>x!==id).slice(0,4)})});save()}
+function maybePrompt(){checkDay();badges();if(st.ext.msgs.length||st.ext.none||Date.now()<st.ext.snooze)return;
+ if(sheetOn||Date.now()-lastAct<4000){clearTimeout(maybePrompt.t);maybePrompt.t=setTimeout(maybePrompt,2500);return}
+ openExtPrompt(true)}
+function openExtPrompt(auto){
+ sheet(`<h3>${ico('crate')}הזמנה מספק החוץ</h3><p class="sub">הדבק את ההזמנה ששלחת הבוקר. ליד כל מוצר בקטלוג תופיע הערה עד 04:00.</p>
+ <textarea class="field" id="pp" placeholder="הדבק כאן את ההודעה…" aria-label="הודעת ההזמנה"></textarea>
+ <div style="margin-top:12px"><button class="btn ext" data-a="savep" type="button">שמירה</button><button class="btn sec" data-a="later" type="button">אחר כך (בעוד שעה)</button></div>
+ <button class="link" data-a="none" type="button" style="color:var(--mute)">אין היום הזמנה מספק חוץ</button>`,a=>{
+  if(a==='savep'){const v=$('pp').value;if(!v.trim())return;addExt(v);closeSheet();go('ext')}
+  if(a==='later'){st.ext.snooze=Date.now()+36e5;save();closeSheet()}
+  if(a==='none'){st.ext.none=true;save();badges();closeSheet();rerender()}},{auto,nofocus:auto,onclose:()=>{if(auto&&!st.ext.msgs.length&&!st.ext.none&&Date.now()>st.ext.snooze){st.ext.snooze=Date.now()+36e5;save()}}})}
+function renderExt(){const e=st.ext,items=Object.keys(e.items).filter(id=>PM[id]);
+ let h=`<div class="ph"><h2>ספק חוץ</h2></div><p class="sub">מה שמודבק כאן מופיע ליד המוצרים בקטלוג ומתאפס ב-04:00.</p>
+ <textarea class="field" id="ein" placeholder="הדבק את ההזמנה מספק החוץ…" aria-label="הודעת ההזמנה"></textarea><div style="margin-top:8px"><button class="btn ext" id="esend" type="button">שמירה</button></div>`;
+ if(e.none&&!e.msgs.length)h+=`<div class="card"><h3>סימנת שאין היום הזמנה מספק חוץ</h3><p class="sub" style="margin:0">אפשר עדיין להדביק למעלה.</p></div>`;
+ if(e.bad.length)h+=`<div class="card bad"><h3>האם התכוונת ל…? <small>${e.bad.length} שורות</small></h3>`+e.bad.map((b,n)=>`<div class="er col"><b>${esc(b.line)}</b><div class="opts">${(b.c||[]).filter(id=>PM[id]).slice(0,3).map((id,x)=>`<button class="mini ${x?'ext':'fill'}" data-as="${n}:${id}" type="button">${esc(PM[id].n)}</button>`).join('')}<button class="mini" data-fix="${n}" type="button">מוצר אחר</button><button class="mini" data-ign="${n}" type="button">להתעלם</button></div></div>`).join('')+`</div>`;
+ if(items.length)h+=`<div class="card"><h3>הוזמנו היום <small>${items.length} מוצרים</small></h3>`+items.map(id=>`<div class="er"><b>${esc(PM[id].n)}${e.near[id]?`<span class="nr">זוהה בקירוב מ"${esc((e.src[id]||[{}])[0].line||'')}"</span>`:''}</b><small>${esc(extQty(id))}</small>${e.near[id]?`<button class="mini" data-wrong="${id}" type="button">לא נכון</button>`:''}<button class="x" data-rm="${id}" type="button" aria-label="הסרה">×</button></div>`).join('')+`</div>`;
+ if(e.msgs.length)h+=`<div class="sec-t">הודעות מהיום</div>`+e.msgs.slice().reverse().map(m=>`<div class="bub">${esc(m.t)}<time>${fmtT(m.time)}</time></div>`).join('');
+ if(!e.msgs.length&&!e.none)h+=`<div class="empty">${ico('crate')}עוד לא הודבקה היום הזמנה מספק החוץ</div>`;
+ $('ext').innerHTML=h;
+ $('esend').onclick=()=>{const v=$('ein').value;if(!v.trim())return;addExt(v);renderExt()}}
+$('ext').addEventListener('click',ev=>{const t=ev.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.rm){delete st.ext.items[d.rm];delete st.ext.src[d.rm];delete st.ext.near[d.rm];save();renderExt()}
+ else if(d.as){const[n,id]=d.as.split(':');assign(+n,id);renderExt()}
+ else if(d.wrong){wrong(d.wrong);renderExt()}
+ else if(d.ign){st.ext.bad.splice(+d.ign,1);save();renderExt()}
+ else if(d.fix)openPicker(+d.fix)});
+function openPicker(n){const b=st.ext.bad[n];
+ const body=sheet(`<h3>לאיזה מוצר הכוונה?</h3><p class="sub">"${esc(b.line)}" · הבחירה תיזכר לפעם הבאה</p><input class="field" id="ps" type="search" placeholder="חיפוש מוצר…" aria-label="חיפוש"><div id="pr" style="margin-top:12px"></div>`,a=>{
+  if(a.startsWith('p:')){assign(n,a.slice(2));closeSheet();renderExt()}});
+ const draw=()=>{const v=$('ps').value.trim();const r=(v?st.prods.filter(p=>nameMatch(p,v)):(b.c||[]).map(id=>PM[id]).filter(Boolean)).slice(0,30);
+  $('pr').innerHTML=r.map(p=>`<button class="pick" data-a="p:${p.id}" type="button">${esc(p.n)}<small>${esc(p.c)}</small></button>`).join('')||'<p class="sub">הקלד שם מוצר</p>'};
+ $('ps').oninput=draw;draw()}
+
+/* ---------- order list ---------- */
+let cat='',term='',only=false,view='order';
+function nameMatch(p,v){if(p.n.includes(v))return true;const T=toks(v),P=toks(p.n);return T.length&&T.every(t=>P.some(x=>x.startsWith(t)))}
+function ctrl(id,k,q,p,label,pop){return `<div>${label?`<i class="sl">${esc(label)}</i>`:''}<div class="qc ${p==='א'?'box':'unit'}${q?' on':''}${pop?' pop':''}"><button type="button" data-act="plus" data-id="${id}" data-k="${k??''}" aria-label="הוספה">+</button><button type="button" class="num" data-act="num" data-id="${id}" data-k="${k??''}" aria-label="בחירת כמות"><b>${q}</b><i>${pk(p,q)}</i></button><button type="button" data-act="minus" data-id="${id}" data-k="${k??''}" aria-label="הפחתה">−</button></div></div>`}
+function rowHTML(p,pop){const o=st.o[p.id]||{},ks=Object.keys(o),multi=p.s.length>1,none=!p.s.length;
+ let tag;if(none)tag=`<span class="tag" style="color:var(--danger)">חסר ספק</span>`;else if(!multi)tag=`<span class="tag">${esc(supN(p.s[0].k))}</span>`;
+ else if(!ks.length)tag=`<span class="tag">${p.s.length} ספקים</span>`;
+ else tag=`<button type="button" class="tag" data-act="change" data-id="${p.id}">${esc(ks.map(supN).join(' + '))}</button>`;
+ const l=st.last[p.id],lh=l?'קודם: '+Object.entries(l).map(([k,q])=>q+' '+pk(packOf(p,k),q)).join(', '):'';
+ const en=extQty(p.id);
+ const lines=ks.length?ks.map(k=>ctrl(p.id,k,o[k],packOf(p,k),ks.length>1?supN(k):'',pop)).join(''):ctrl(p.id,multi||none?null:p.s[0].k,0,packOf(p),'',pop);
+ return `<div class="item${ks.length?' has':''}" data-row="${p.id}">${blob(p)}<div class="info"><b>${esc(p.n)}</b><small>${tag}${lh?`<span>${esc(lh)}</span>`:''}</small>${p.note?`<span class="pnote">${esc(p.note)}</span>`:''}${en?`<span class="extn">ספק חוץ: הוזמנו ${esc(en)}</span>`:''}</div><div class="ctrls">${lines}</div></div>`}
+function renderList(){let h='';
+ st.cats.forEach(c=>{if(cat&&c!==cat)return;const ps=st.prods.filter(p=>p.c===c&&!p.hide&&(!term||nameMatch(p,term))&&(!only||st.o[p.id]));
+  if(!ps.length)return;h+=`<div class="cat"><i style="background:${dot(c)}"></i>${esc(c)}<span>${ps.length}</span></div>`+ps.map(p=>rowHTML(p)).join('')});
+ $('list').innerHTML=h||`<div class="empty">${ico(only?'crate':'leaf')}${only?'עוד אין מוצרים בהזמנה':'לא נמצאו מוצרים'}</div>`}
+function refreshRow(id,pop){const r=document.querySelector(`[data-row="${id}"]`);if(r){if(only&&!st.o[id])renderList();else r.outerHTML=rowHTML(PM[id],pop)}bar()}
+function totals(){const s=new Set();let n=0;for(const i in st.o){if(!PM[i])continue;n++;for(const k in st.o[i])s.add(k)}return{n,s:s.size}}
+function bar(){const t=totals();if(!t.n&&only){only=false;$('onlyOn').setAttribute('aria-pressed','false');$('onlyLbl').textContent='הקשה: רק מה שבהזמנה';if(view==='order')renderList()}
+ $('obar').hidden=!t.n||view!=='order';$('clearO').hidden=!t.n;$('obN').textContent=t.n;$('obS').textContent=t.s;$('badge').hidden=!t.n;$('badge').textContent=t.s}
+function setQ(id,k,v){const o=st.o[id]||(st.o[id]={});o[k]=Math.max(0,Math.min(999,v));if(!o[k])delete o[k];if(!Object.keys(o).length)delete st.o[id];save()}
+const getQ=(id,k)=>(st.o[id]||{})[k]||0;
+function step(b,rep){const id=b.dataset.id,k=b.dataset.k,act=b.dataset.act,p=PM[id];if(!p)return false;
+ if(act==='plus'){if(!k){if(rep)return false;openSup(id);return false}setQ(id,k,getQ(id,k)+1);refreshRow(id,!rep);if(!rep)fly(id);return true}
+ if(act==='minus'){if(!k)return false;const q=getQ(id,k);if(rep&&q<=1)return false;if(!q)return false;setQ(id,k,q-1);refreshRow(id,false);return true}}
+let hold=null;
+$('list').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act=plus],[data-act=minus]');if(!b)return;
+ hold={b,x:e.clientX,y:e.clientY,rep:false};const h=hold;
+ h.t=setTimeout(()=>{if(hold!==h)return;h.rep=true;let d=200;const tick=()=>{if(hold!==h)return;const r=step({dataset:{...h.b.dataset}},true);if(!r){hold=null;return}d=Math.max(55,d*.85);h.t=setTimeout(tick,d)};tick()},450)});
+document.addEventListener('pointermove',e=>{if(hold&&!hold.rep&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10){clearTimeout(hold.t);hold=null}});
+document.addEventListener('pointerup',e=>{if(!hold)return;clearTimeout(hold.t);const h=hold;hold=null;if(!h.rep)step({dataset:{...h.b.dataset}},false)});
+document.addEventListener('pointercancel',()=>{if(hold){clearTimeout(hold.t);hold=null}});
+$('list').addEventListener('contextmenu',e=>{if(e.target.closest('.qc'))e.preventDefault()});
+$('list').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+ if((a==='plus'||a==='minus')&&e.detail===0)step(b,false);
+ if(a==='change')openSup(b.dataset.id);
+ if(a==='num'){if(!b.dataset.k)return openSup(b.dataset.id);openQty(b.dataset.id,b.dataset.k,b)}});
+function openSup(id,then){if(!PM[id].s.length){toast('למוצר הזה עוד אין ספק. משייכים בהגדרות ← מוצרים');return}const p=PM[id],pref=st.pref[id]??(st.last[id]?Object.keys(st.last[id])[0]:null),en=extQty(id);
+ sheet(`<h3>${ico(catIco(p.c))}ממי להזמין ${esc(p.n)}?</h3><p class="sub">הבחירה נשמרת רק להזמנה הזאת</p>${en?`<p><span class="extn">ספק חוץ: הוזמנו ${esc(en)}</span></p>`:''}`+
+ p.s.map(x=>`<button type="button" class="pick${pref===x.k?' pref':''}" data-a="k:${x.k}">${esc(supN(x.k))}<small>${pk(x.p,0)}</small>${pref===x.k?'<em>בפעם הקודמת</em>':''}</button>`).join('')+
+ `<button type="button" class="link" data-a="split">לפצל בין ${p.s.length===2?'שניהם':'כמה ספקים'}</button>`,a=>{
+  const o=st.o[id]||{},tot=Object.values(o).reduce((s,v)=>s+v,0);
+  if(a==='split'){const n={};p.s.forEach(x=>n[x.k]=o[x.k]||1);st.o[id]=n}
+  else if(a.startsWith('k:')){const k=a.slice(2);st.o[id]={[k]:Math.max(tot,1)};st.pref[id]=k}else return;
+  save();closeSheet();refreshRow(id,true);if(!tot)fly(id)},{nofocus:true})}
+function openQty(id,k,anchor){const p=PM[id],q=getQ(id,k),pp=packOf(p,k);closeQty();
+ const ov=document.createElement('div');ov.className='qov';ov.id='qov';
+ ov.innerHTML=`<div class="qpop" role="dialog" aria-modal="true" aria-label="עריכת כמות"><b>${esc(p.n)}</b><small>${esc(supN(k))} · ${pk(pp,2)}</small><div class="wheelwrap"><div class="wheel" id="wh" tabindex="0" aria-label="כמות"><div class="pad"></div>${Array.from({length:100},(_,i)=>`<div data-v="${i}">${i}</div>`).join('')}<div class="pad"></div></div></div><button class="btn" data-q="ok" type="button">שמירה</button><button class="btn sec" data-q="zero" type="button">איפוס</button></div>`;
+ document.body.appendChild(ov);const pop=ov.firstChild,r=anchor.getBoundingClientRect(),W=pop.offsetWidth,H=pop.offsetHeight,tb=$('tabs').offsetHeight;
+ pop.style.left=Math.max(8,Math.min(innerWidth-W-8,r.left+r.width/2-W/2))+'px';pop.style.top=Math.max(8,Math.min(innerHeight-tb-H-8,r.top+r.height/2-H/2))+'px';
+ const wh=$('wh'),cur=()=>Math.max(0,Math.min(99,Math.round(wh.scrollTop/44)));
+ const mark=()=>{const c=cur();wh.querySelectorAll('[data-v]').forEach(d=>d.classList.toggle('c',+d.dataset.v===c))};
+ wh.scrollTop=q*44;mark();wh.addEventListener('scroll',mark,{passive:true});wh.focus({preventScroll:true});
+ wh.addEventListener('click',e=>{const d=e.target.closest('[data-v]');if(d)wh.scrollTo({top:+d.dataset.v*44,behavior:reduce?'auto':'smooth'})});
+ wh.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();wh.scrollTop+=44}if(e.key==='ArrowUp'){e.preventDefault();wh.scrollTop-=44}if(e.key==='Enter'){setQ(id,k,cur());closeQty();refreshRow(id,true)}});
+ ov.addEventListener('click',e=>{if(e.target===ov)return closeQty();const b=e.target.closest('[data-q]');if(!b)return;
+  setQ(id,k,b.dataset.q==='zero'?0:cur());closeQty();refreshRow(id,true)})}
+function closeQty(){const o=$('qov');if(o)o.remove()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeQty()});
+function fly(id){return;requestAnimationFrame(()=>{const r=document.querySelector(`[data-row="${id}"] .qc`),c=$('crt');if(!r||!c||$('obar').hidden)return;
+ const a=r.getBoundingClientRect(),z=c.getBoundingClientRect(),p=PM[id];const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('class','flyer');s.innerHTML=`<use href="#${catIco(p.c)==='carrot'?'tomato':catIco(p.c)}"/>`;document.body.appendChild(s);
+ const x0=a.right-36,y0=a.top+8,x1=z.left+6,y1=z.top+2;
+ s.animate([{transform:`translate(${x0}px,${y0}px)`},{transform:`translate(${(x0+x1)/2}px,${Math.min(y0,y1)-60}px) scale(1.15) rotate(180deg)`},{transform:`translate(${x1}px,${y1}px) scale(.6) rotate(360deg)`}],{duration:550,easing:'cubic-bezier(.3,.7,.4,1)'}).onfinish=()=>{s.remove();const o=$('obar');o.classList.remove('bump');void o.offsetWidth;o.classList.add('bump')}})}
+function leaves(){return;const w=innerWidth,h=innerHeight;for(let n=0;n<16;n++){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('class','leafc');s.innerHTML='<use href="#leaf"/>';document.body.appendChild(s);
+ const x=Math.random()*w,dx=(Math.random()-.5)*90,r=Math.random()*360;s.animate([{transform:`translate(${x}px,-20px) rotate(${r}deg)`,opacity:1},{transform:`translate(${x+dx}px,${h*.8}px) rotate(${r+240}deg)`,opacity:0}],{duration:1100+Math.random()*500,delay:n*40,easing:'ease-in'}).onfinish=()=>s.remove()}}
+$('q').addEventListener('input',e=>{term=e.target.value.trim();renderList()});
+$('catSel').addEventListener('change',e=>{cat=e.target.value;renderList()});
+$('onlyOn').addEventListener('click',e=>{only=!only;e.currentTarget.setAttribute('aria-pressed',only);$('onlyLbl').textContent=only?'מוצג רק מה שבהזמנה · הקשה: הכול':'הקשה: רק מה שבהזמנה';renderList()});
+$('likeLast').addEventListener('click',()=>{let n=0;for(const id in st.last){if(PM[id]&&!PM[id].hide&&!st.o[id]){st.o[id]=Object.assign({},st.last[id]);n++}}save();renderList();bar();toast(n?`נוספו ${n} מוצרים מההזמנה הקודמת`:'הכול כבר בהזמנה')});
+function clearOrder(){const snap={o:st.o,sent:st.sent};st.o={};st.sent={};save();rerender();undoToast('ההזמנה נוקתה',()=>{st.o=snap.o;st.sent=snap.sent;save();rerender()})}
+$('clearO').addEventListener('click',e=>{if(!arm(e.currentTarget,'בטוח? לנקות'))return;clearOrder()});
+function fillCats(){$('catSel').innerHTML='<option value="">הכול</option>'+st.cats.map(c=>`<option${c===cat?' selected':''}>${esc(c)}</option>`).join('')}
+
+/* ---------- send + history ---------- */
+function bySup(o){const g={};for(const id in o){if(!PM[id])continue;for(const k in o[id])(g[k]||(g[k]=[])).push([id,o[id][k]])}return g}
+let inFrame=true;try{inFrame=window.top!==window.self}catch(e){}
+const STANDALONE=!inFrame&&(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true);
+const WA_DIRECT=STANDALONE&&/iPhone|iPad|iPod/.test(navigator.userAgent);
+const waLink=m=>(WA_DIRECT?'whatsapp://send?text=':'https://wa.me/?text=')+encodeURIComponent(m);
+const msg=(k,lines)=>lines.map(([id,q])=>`${PM[id].n} – ${q} ${pk(packOf(PM[id],k),q)}`).join('\n');
+function renderSum(){const g=bySup(st.o),ks=Object.keys(g);
+ if(!ks.length){$('sum').innerHTML=`<div class="ph"><h2>שליחה לספקים</h2></div><div class="empty">${ico('crate')}ההזמנה ריקה. מוסיפים מוצרים בטאב "הזמנה".</div>`;return}
+ const sent=ks.filter(k=>st.sent[k]).length;
+ $('sum').innerHTML=`<div class="ph"><h2>שליחה לספקים</h2></div><p class="sub">${sent} מתוך ${ks.length} ספקים נשלחו</p>`+ks.map(k=>{const m=msg(k,g[k]);return `<div class="card"><h3>${esc(supN(k))} <small>${g[k].length} מוצרים</small>${st.sent[k]?'<span class="ok">✓ נשלח</span>':''}</h3><div class="msg">${esc(m)}</div><a class="btn wa${st.sent[k]?' sent':''}" data-sent="${k}" href="${waLink(m)}"${STANDALONE?'':' target="_blank" rel="noopener"'}>${st.sent[k]?'שליחה שוב':'שליחה בוואטסאפ'}</a></div>`}).join('')+
+ `<div style="margin-top:16px"><button class="btn" id="close" type="button">סגירת ההזמנה ושמירה בהיסטוריה</button><button class="btn sec" id="back" type="button">חזרה לעריכה</button><button class="btn danger" id="clearS" type="button">ניקוי ההזמנה</button></div>`;
+ $('clearS').onclick=e=>{if(!arm(e.currentTarget,'בטוח? לחיצה נוספת מנקה את ההזמנה'))return;clearOrder()};
+ $('close').onclick=e=>{if(!arm(e.currentTarget,'בטוח? לחיצה נוספת סוגרת את ההזמנה'))return;const lines=[];for(const id in st.o){if(!PM[id])continue;for(const k in st.o[id])lines.push({pid:id,n:PM[id].n,k,sn:supN(k),q:st.o[id][k],p:packOf(PM[id],k)})}
+  const snap={o:st.o,sent:st.sent,last:st.last,hist:st.hist.slice()};
+  st.hist.unshift({d:Date.now(),lines});st.hist=st.hist.slice(0,120);st.last=st.o;st.o={};st.sent={};save();go('hist');
+  undoToast('ההזמנה נסגרה',()=>{Object.assign(st,snap);save();go('sum')})};
+ $('back').onclick=()=>go('order')}
+$('sum').addEventListener('click',e=>{const a=e.target.closest('[data-sent]');if(!a)return;st.sent[a.dataset.sent]=1;save();
+ if(WA_DIRECT){const fb='https://wa.me/?text='+a.href.split('text=')[1];const t=setTimeout(()=>{if(!document.hidden)location.href=fb},1500);document.addEventListener('visibilitychange',()=>clearTimeout(t),{once:true})}
+ setTimeout(renderSum,400)});
+function renderHist(){$('hist').innerHTML='<div class="ph"><h2>היסטוריה</h2></div>'+(st.hist.length?st.hist.map((h,hi)=>{const g={};h.lines.forEach(l=>(g[l.sn]||(g[l.sn]=[])).push(l));
+ return `<details class="card"><summary>${fmtD(h.d)}<small>${h.lines.length} שורות · ${Object.keys(g).length} ספקים</small></summary>${Object.entries(g).map(([sn,ls])=>`<div class="sec-t" style="margin-top:8px">${esc(sn)}</div><div class="msg">${esc(ls.map(l=>`${l.n} – ${l.q} ${pk(l.p,l.q)}`).join('\n'))}</div>`).join('')}<button class="btn sec" data-rest="${hi}" type="button">שחזור לעריכה</button></details>`}).join(''):`<div class="empty">${ico('cherry')}אין עדיין הזמנות סגורות</div>`)}
+
+function histOrder(h){const o={};h.lines.forEach(l=>{let id=l.pid&&PM[l.pid]?l.pid:(st.prods.find(p=>p.n===l.n)||{}).id;if(!id)return;const p=PM[id];const k=p.s.some(x=>x.k===l.k)?l.k:(p.s[0]||{}).k;if(!k)return;(o[id]||(o[id]={}))[k]=((o[id]||{})[k]||0)+l.q});return o}
+function restoreHist(i){const ho=histOrder(st.hist[i]),had=Object.keys(st.o).length,snap={o:st.o};
+ const apply=mode=>{if(mode==='rep')st.o=ho;else{const n=JSON.parse(JSON.stringify(st.o));for(const id in ho)for(const k in ho[id]){(n[id]||(n[id]={}))[k]=((n[id]||{})[k]||0)+ho[id][k]}st.o=n}
+  st.sent={};save();closeSheet();go('order');undoToast('ההזמנה שוחזרה לעריכה',()=>{st.o=snap.o;save();rerender()})};
+ if(!had)return apply('rep');
+ sheet(`<h3>יש כבר הזמנה פתוחה</h3><p class="sub">מה לעשות עם ההזמנה שמשחזרים?</p><button class="btn" data-a="rep" type="button">החלפת ההזמנה הפתוחה</button><button class="btn sec" data-a="add" type="button">צירוף להזמנה הפתוחה</button>`,a=>apply(a),{nofocus:true})}
+$('hist').addEventListener('click',e=>{const b=e.target.closest('[data-rest]');if(b)restoreHist(+b.dataset.rest)});
+
+/* ---------- settings ---------- */
+const BK_DAYS=14;
+const bkDue=()=>Date.now()-(st.set.bk||0)>BK_DAYS*864e5;
+function renderSet(){const t=st.set.theme;
+ $('set').innerHTML=`<div class="ph"><h2>הגדרות</h2></div>
+ <div class="sec-t">מראה</div><div class="seg" id="thm">${[['auto','לפי המכשיר'],['light','בהיר'],['dark','כהה']].map(([v,l])=>`<button type="button" data-t="${v}" class="${t===v?'on':''}" aria-pressed="${t===v}">${l}</button>`).join('')}</div>
+ <div class="sec-t">קטלוג</div>
+ <button class="set" data-go="cat" type="button"><span>מוצרים וקטגוריות<br><small>${st.prods.length} מוצרים · ${st.prods.filter(p=>p.hide).length} מוסתרים</small></span><span class="chev"></span></button>
+ <button class="set" data-go="sups" type="button"><span>ספקים<br><small>${st.sup.length} ספקים</small></span><span class="chev"></span></button>
+ <div class="sec-t">גיבוי</div>
+ ${bkDue()?`<div class="warn">עבר זמן מאז הגיבוי האחרון. כדאי לגבות, כי הנתונים נשמרים רק בטלפון.</div>`:''}
+ <p class="sub">גיבוי אחרון: ${st.set.bkReal?fmtD(st.set.bkReal):'עוד לא בוצע'}</p>
+ <button class="btn sec" id="bkOut" type="button">ייצוא גיבוי לקובץ</button><button class="btn sec" id="bkCopy" type="button">העתקת הגיבוי כטקסט</button><button class="btn sec" id="bkInBtn" type="button">ייבוא מגיבוי</button>
+ <div class="sec-t">מערכת</div>
+ <button class="btn danger" id="wipe" type="button">איפוס כל הנתונים</button>
+ <p class="sub" style="text-align:center;margin-top:24px">גרסה ${VER}</p>`;
+ $('thm').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;st.set.theme=b.dataset.t;save();applyTheme();renderSet()};
+ $('set').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+ $('bkOut').onclick=exportFile;$('bkCopy').onclick=copyBackup;$('bkInBtn').onclick=importSheet;
+ $('wipe').onclick=e=>{if(!arm(e.currentTarget,'בטוח? לחיצה נוספת מוחקת הכול'))return;try{localStorage.removeItem(KEY)}catch(x){}Object.keys(IMG).forEach(imgDel);st=seed();reindex();save();fillCats();applyTheme();go('order')}}
+function backupText(){return JSON.stringify({app:'yerakot',ver:VER,at:Date.now(),data:st,img:IMG})}
+function markBk(){st.set.bk=Date.now();st.set.bkReal=Date.now();save();badges()}
+function exportFile(){try{const b=new Blob([backupText()],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='גיבוי-הזמנות-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);markBk();toast('קובץ הגיבוי נוצר');renderSet()}catch(e){toast('לא ניתן ליצור קובץ כאן, השתמש בהעתקה')}}
+function copyBackup(){const t=backupText();const done=()=>{markBk();toast('הגיבוי הועתק');renderSet()};try{navigator.clipboard.writeText(t).then(done,()=>toast('ההעתקה נחסמה'))}catch(e){toast('ההעתקה נחסמה')}}
+function restore(txt){let j;try{j=JSON.parse(txt)}catch(e){toast('הקובץ לא תקין');return false}if(!j||j.app!=='yerakot'||!j.data||!j.data.prods){toast('זה לא קובץ גיבוי של האפליקציה');return false}
+ st=j.data;Object.keys(IMG).forEach(imgDel);Object.entries(j.img||{}).forEach(([k,v])=>imgPut(k,v));reindex();save();fillCats();applyTheme();toast('הגיבוי שוחזר');return true}
+function importSheet(){sheet(`<h3>ייבוא מגיבוי</h3><p class="sub">הייבוא מחליף את כל הנתונים שבטלפון.</p><button class="btn sec" data-a="file" type="button">בחירת קובץ גיבוי</button><label class="lb" for="bkt">או הדבקת טקסט הגיבוי</label><textarea class="field" id="bkt" aria-label="טקסט הגיבוי"></textarea><div style="margin-top:12px"><button class="btn danger" data-a="paste" type="button">שחזור מהטקסט</button></div>`,(a,b)=>{
+ if(a==='file')$('bkIn').click();
+ if(a==='paste'){if(!$('bkt').value.trim())return;if(!arm(b,'בטוח? לחיצה נוספת מחליפה הכול'))return;if(restore($('bkt').value)){closeSheet();go('order')}}},{nofocus:true})}
+$('bkIn').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{if(restore(r.result)){closeSheet();go('order')}};r.readAsText(f)});
+
+/* ---------- catalog management ---------- */
+let cterm='';
+function renderCat(){let h=`<div class="ph"><button class="mini" data-go="set" type="button">חזרה</button><h2>קטלוג</h2></div>
+ <div style="display:flex;gap:8px"><input class="field" id="cq" type="search" placeholder="חיפוש מוצר…" value="${esc(cterm)}" aria-label="חיפוש מוצר"><button class="mini" id="catsBtn" type="button" style="min-height:48px">קטגוריות</button></div>
+ <div style="margin-top:8px"><button class="btn" id="newP" type="button">+ מוצר חדש</button></div><div id="clist"></div>`;
+ $('catm').innerHTML=h;drawCatList();
+ $('cq').oninput=e=>{cterm=e.target.value.trim();drawCatList()};
+ $('newP').onclick=()=>editProd(null);$('catsBtn').onclick=editCats;
+ $('catm').querySelector('[data-go]').onclick=()=>go('set')}
+function drawCatList(){let h='';st.cats.forEach(c=>{const ps=st.prods.filter(p=>p.c===c&&(!cterm||nameMatch(p,cterm)));if(!ps.length)return;
+ h+=`<div class="cat"><i style="background:${dot(c)}"></i>${esc(c)}<span>${ps.length}</span></div>`+ps.map(p=>`<button class="lrow" data-p="${p.id}" type="button">${blob(p)}<span class="grow"><b>${esc(p.n)}</b><small>${p.s.length?esc(p.s.map(x=>supN(x.k)+' · '+pk(x.p,0)).join(' | ')):'<span style="color:var(--danger)">חסר ספק</span>'}</small></span>${p.hide?'<span class="hid">מוסתר</span>':''}</button>`).join('')});
+ $('clist').innerHTML=h||`<div class="empty">${ico('leaf')}לא נמצאו מוצרים</div>`}
+$('catm').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)editProd(b.dataset.p)});
+let pendImg=undefined;
+function artKeys(){return [...new Set(SEEDP.map(r=>r[5]).filter(Boolean).concat(st.prods.map(p=>p.art).filter(Boolean)))]}
+function editProd(id){const p=id?PM[id]:null;const d=p?JSON.parse(JSON.stringify(p)):{id:uid('p'),n:'',c:cat||st.cats[0],s:[{k:st.sup[0].id,p:'א'}],hide:false};
+ pendImg=undefined;let newCat=false,artOpen=false;
+ const body=sheet('',(a,b)=>{
+  read();
+  if(a==='img')$('imgIn').click();
+  else if(a==='imgDel'){pendImg=null;draw()}
+  else if(a==='artPick'){artOpen=!artOpen;draw()}
+  else if(a.startsWith('art:')){d.art=a.slice(4);artOpen=false;draw()}
+  else if(a==='addS'){const free=st.sup.find(s=>!d.s.some(x=>x.k===s.id));if(free){d.s.push({k:free.id,p:d.s[0]?d.s[0].p:'א'});draw()}}
+  else if(a.startsWith('rmS:')){d.s.splice(+a.slice(4),1);draw()}
+  else if(a.startsWith('pk:')){const[i,v]=a.slice(3).split(',');d.s[+i].p=v;draw()}
+  else if(a==='save'){read();if(!d.n.trim()){toast('צריך שם למוצר');return}if(!d.s.length){toast('צריך לבחור ספק');return}if(newCat){const nc=$('ncat').value.trim();if(!nc){toast('צריך שם לקטגוריה');return}if(!st.cats.includes(nc))st.cats.push(nc);d.c=nc}
+   const ids=d.s.map(x=>x.k);if(new Set(ids).size!==ids.length){toast('אותו ספק מופיע פעמיים');return}
+   d.n=d.n.trim();if(p)Object.assign(p,d);else st.prods.push(d);
+   if(pendImg)imgPut(d.id,pendImg);else if(pendImg===null)imgDel(d.id);
+   if(st.o[d.id]){for(const k in st.o[d.id])if(!ids.includes(k))delete st.o[d.id][k];if(!Object.keys(st.o[d.id]).length)delete st.o[d.id]}
+   reindex();save();closeSheet();fillCats();renderCat();toast(p?'המוצר עודכן':'המוצר נוסף')}
+  else if(a==='del'){if(!arm(b,'בטוח? לחיצה נוספת מוחקת'))return;st.prods=st.prods.filter(x=>x.id!==d.id);delete st.o[d.id];delete st.last[d.id];imgDel(d.id);
+   for(const k in st.alias)if(st.alias[k]===d.id)delete st.alias[k];reindex();save();closeSheet();renderCat()}},{nofocus:true});
+ function read(){const n=$('pn'),c=$('pc'),h=$('ph'),nt=$('pnote');if(n)d.n=n.value;if(nt)d.note=nt.value.trim();if(c){if(c.value==='__new'){newCat=true}else{newCat=false;d.c=c.value}}if(h)d.hide=h.checked;
+  body.querySelectorAll('[data-si]').forEach(s=>d.s[+s.dataset.si].k=s.value)}
+ function draw(){const img=pendImg===undefined?IMG[d.id]:pendImg;const nc=newCat?($('ncat')||{}).value||'':'';
+  body.innerHTML=`<h3>${p?'עריכת מוצר':'מוצר חדש'}</h3>
+  <div class="imgbox">${img?`<img class="thumb" src="${img}" alt="">`:`<span class="ph0">${d.art?`<svg viewBox="0 0 48 48" style="width:52px;height:52px">${ART(d.art)}</svg>`:ico(catIco(d.c))}</span>`}<div style="display:flex;flex-direction:column;gap:8px"><button class="mini" data-a="img" type="button">${img?'החלפת תמונה':'הוספת תמונה'}</button>${img?'<button class="mini" data-a="imgDel" type="button">הסרת תמונה</button>':'<button class="mini" data-a="artPick" type="button">בחירת איור</button>'}</div></div>${artOpen?`<div class="artgrid">${artKeys().map(k=>`<button type="button" data-a="art:${esc(k)}" class="${d.art===k?'on':''}" aria-label="איור"><svg viewBox="0 0 48 48">${ART(k)}</svg></button>`).join('')}</div>`:''}
+  <label class="lb" for="pn">שם המוצר</label><input class="field" id="pn" value="${esc(d.n)}" autocomplete="off">
+  <label class="lb" for="pnote">הערה (לא חובה)</label><input class="field" id="pnote" value="${esc(d.note||'')}" autocomplete="off" placeholder="למשל: 7 יחידות בארגז">
+  <label class="lb" for="pc">קטגוריה</label><select class="field" id="pc">${st.cats.map(c=>`<option${c===d.c&&!newCat?' selected':''}>${esc(c)}</option>`).join('')}<option value="__new"${newCat?' selected':''}>+ קטגוריה חדשה…</option></select>
+  ${newCat?`<input class="field" id="ncat" style="margin-top:8px" placeholder="שם הקטגוריה החדשה" value="${esc(nc)}">`:''}
+  <label class="lb">ספקים ואריזה</label>
+  ${d.s.map((x,i)=>`<div class="srow"><select class="field" data-si="${i}" aria-label="ספק">${st.sup.map(s=>`<option value="${s.id}"${s.id===x.k?' selected':''}>${esc(s.n)}</option>`).join('')}</select><div class="seg pack"><button type="button" data-a="pk:${i},א" class="${x.p==='א'?'on':''}">ארגז</button><button type="button" data-a="pk:${i},י" class="u ${x.p==='י'?'on':''}">יחידה</button><button type="button" data-a="pk:${i},ח" class="u ${x.p==='ח'?'on':''}">חבילה</button></div>${d.s.length>0?`<button class="x" data-a="rmS:${i}" type="button" aria-label="הסרת ספק">×</button>`:''}</div>`).join('')}
+  ${d.s.length<st.sup.length?`<button class="mini" data-a="addS" type="button">${d.s.length?'+ ספק נוסף':'+ בחירת ספק'}</button>`:''}
+  <label class="sw"><span>מוסתר מההזמנה (לא בעונה)</span><input type="checkbox" id="ph"${d.hide?' checked':''}></label>
+  <div style="margin-top:16px"><button class="btn" data-a="save" type="button">שמירה</button>${p?'<button class="btn danger" data-a="del" type="button">מחיקת המוצר</button>':''}</div>`;
+  $('pc').onchange=()=>{read();draw()};
+  body.querySelectorAll('[data-si],#pn,#ph,#pnote').forEach(el=>el.addEventListener('change',read))}
+ draw();
+ $('imgIn').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{read();pendImg=await shrink(f);draw()}catch(x){toast('לא הצלחתי לקרוא את התמונה')}}}
+function editCats(){const body=sheet('',(a,b)=>{
+  const [op,i]=a.split(':');const n=+i;
+  if(op==='up'&&n>0){[st.cats[n-1],st.cats[n]]=[st.cats[n],st.cats[n-1]];save();draw()}
+  if(op==='ren'){const v=$('cr'+n).value.trim();if(!v||v===st.cats[n])return;if(st.cats.includes(v)){toast('כבר יש קטגוריה בשם הזה');return}const old=st.cats[n];st.cats[n]=v;st.prods.forEach(p=>{if(p.c===old)p.c=v});if(cat===old)cat=v;reindex();save();draw()}
+  if(op==='del'){const c=st.cats[n];if(st.prods.some(p=>p.c===c)){toast('יש בקטגוריה מוצרים, קודם להעביר אותם');return}if(!arm(b,'בטוח?'))return;st.cats.splice(n,1);save();draw()}
+  if(op==='add'){const v=$('cnew').value.trim();if(!v||st.cats.includes(v))return;st.cats.push(v);save();draw()}},{nofocus:true,onclose:()=>{fillCats();if(view==='cat')renderCat()}});
+ function draw(){body.innerHTML=`<h3>קטגוריות</h3><p class="sub">שינוי שם, סדר ומחיקה של קטגוריה ריקה</p>`+st.cats.map((c,i)=>`<div class="srow"><input class="field" id="cr${i}" value="${esc(c)}" aria-label="שם קטגוריה"><button class="mini" data-a="ren:${i}" type="button">שמירה</button>${i?`<button class="mini" data-a="up:${i}" type="button" aria-label="הזזה למעלה">▲</button>`:''}<button class="mini" data-a="del:${i}" type="button" style="color:var(--danger)">מחיקה</button></div>`).join('')+
+  `<label class="lb" for="cnew">קטגוריה חדשה</label><div class="srow"><input class="field" id="cnew" placeholder="שם"><button class="mini" data-a="add:0" type="button">הוספה</button></div>`}
+ draw()}
+
+/* ---------- suppliers ---------- */
+function renderSups(){$('supm').innerHTML=`<div class="ph"><button class="mini" data-go="set" type="button">חזרה</button><h2>ספקים</h2></div><p class="sub">ההודעה נשלחת בוואטסאפ, ואת איש הקשר בוחרים שם.</p>
+ <button class="btn" id="newS" type="button">+ ספק חדש</button>`+st.sup.map(s=>{const n=st.prods.filter(p=>p.s.some(x=>x.k===s.id)).length;return `<button class="lrow" data-s="${s.id}" type="button"><span class="grow"><b>${esc(s.n)}</b><small>${s.a?esc(s.a)+' · ':''}${n} מוצרים</small></span><span class="chev" style="color:var(--mute)">‹</span></button>`}).join('');
+ $('supm').querySelector('[data-go]').onclick=()=>go('set');$('newS').onclick=()=>editSup(null)}
+$('supm').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b)editSup(b.dataset.s)});
+function editSup(id){const s=id?st.sup.find(x=>x.id===id):null,used=s?st.prods.filter(p=>p.s.some(x=>x.k===s.id)).length:0;
+ sheet(`<h3>${s?'עריכת ספק':'ספק חדש'}</h3><label class="lb" for="sn">שם הספק</label><input class="field" id="sn" value="${esc(s?s.n:'')}" autocomplete="off"><label class="lb" for="sa">איש קשר (לא חובה)</label><input class="field" id="sa" value="${esc(s?s.a:'')}" autocomplete="off">
+ <div style="margin-top:16px"><button class="btn" data-a="save" type="button">שמירה</button>${s?`<button class="btn danger" data-a="del" type="button">מחיקת הספק</button>`:''}</div>${s&&used?`<p class="sub" style="margin-top:8px">הספק משויך ל-${used} מוצרים. כדי למחוק אותו צריך קודם להחליף להם ספק.</p>`:''}`,(a,b)=>{
+  if(a==='save'){const n=$('sn').value.trim();if(!n){toast('צריך שם לספק');return}if(s){s.n=n;s.a=$('sa').value.trim()}else st.sup.push({id:uid('s'),n,a:$('sa').value.trim()});save();closeSheet();renderSups()}
+  if(a==='del'){if(used){toast('הספק משויך למוצרים');return}if(!arm(b,'בטוח? לחיצה נוספת מוחקת'))return;st.sup=st.sup.filter(x=>x!==s);save();closeSheet();renderSups()}})}
+
+/* ---------- navigation ---------- */
+const scrollPos={};
+function badges(){$('extBadge').hidden=!!(st.ext.msgs.length||st.ext.none);$('setBadge').hidden=!bkDue()}
+function rerender(){if(view==='order')renderList();if(view==='ext')renderExt();if(view==='sum')renderSum();if(view==='hist')renderHist();if(view==='set')renderSet();if(view==='cat')renderCat();if(view==='sups')renderSups();bar();badges()}
+function go(v){scrollPos[view]=scrollY;view=v;['order','ext','sum','hist','set','cat','sups'].forEach(x=>$('v-'+x).hidden=x!==v);
+ const tab={cat:'set',sups:'set'}[v]||v;for(const b of $('tabs').children)b.classList.toggle('on',b.dataset.v===tab);
+ rerender();window.scrollTo(0,scrollPos[v]||0)}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)});
+$('finish').addEventListener('click',()=>go('sum'));
+$('date').textContent=fmtD(Date.now());
+setInterval(()=>{if(checkDay()&&view!=='set')rerender();maybePrompt()},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(checkDay())rerender();maybePrompt()}});
+fillCats();go('order');
+idbOpen().then(idbAll).then(()=>{if(Object.keys(IMG).length)rerender()});
+setTimeout(maybePrompt,600);
+try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
+}
+</script>
